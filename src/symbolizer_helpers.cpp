@@ -452,7 +452,6 @@ bool shield_symbolizer_helper<FaceManagerT, DetectorT>::next_line_placement()
 template <typename FaceManagerT, typename DetectorT>
 void shield_symbolizer_helper<FaceManagerT, DetectorT>::init_marker()
 {
-    //std::string filename = path_processor_type::evaluate(*sym_.get_filename(), this->feature_);
     std::string filename = get<std::string>(sym_, keys::filename, feature_);
     evaluate_transform(image_transform_, feature_, get<transform_type>(sym_, keys::image_transform));
     marker_.reset();

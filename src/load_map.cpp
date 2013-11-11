@@ -871,6 +871,7 @@ void map_parser::parse_symbolizer_base(symbolizer_base &sym, xml_node const &pt)
             throw config_error("failed to parse comp-op: '" + *comp_op_name + "'");
         }
     }
+    else put<value_integer>(sym, keys::comp_op, src_over);
 
     optional<std::string> geometry_transform_wkt = pt.get_opt_attr<std::string>("geometry-transform");
     if (geometry_transform_wkt)

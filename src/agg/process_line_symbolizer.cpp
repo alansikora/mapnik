@@ -71,7 +71,7 @@ void agg_renderer<T>::process(line_symbolizer const& sym,
 #if 0
     if (gamma = gamma_ || gamma_method != gamma_method_)
     {
-        //set_gamma_method(sym, ras_ptr, feature); // FIXME
+        set_gamma_method(sym, ras_ptr, feature); // FIXME
         gamma_method_ = gamma_method;
         gamma_ = gamma;
     }
@@ -88,10 +88,10 @@ void agg_renderer<T>::process(line_symbolizer const& sym,
                                simplify_tag, smooth_tag, dash_tag, stroke_tag> conv_types;
 
     pixfmt_comp_type pixf(buf);
-    //pixf.comp_op(static_cast<agg::comp_op_e>(get<int>(sym, "comp-op", feature)));
+    pixf.comp_op(static_cast<agg::comp_op_e>(get<value_integer>(sym, keys::comp_op, feature)));
     renderer_base renb(pixf);
     agg::trans_affine tr;
-    //evaluate_transform(tr, feature, get<transform_type>(sym, "transform", feature));
+    evaluate_transform(tr, feature, get<transform_type>(sym, keys::transform));
     box2d<double> clip_box = clipping_extent();
 
     bool clip = get<bool>(sym, keys::clip, feature);
