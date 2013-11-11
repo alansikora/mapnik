@@ -73,7 +73,7 @@ void agg_renderer<T>::process(markers_symbolizer const& sym,
     typedef label_collision_detector4 detector_type;
     typedef boost::mpl::vector<clip_poly_tag,transform_tag,smooth_tag> conv_types;
 
-    std::string filename = path_processor_type::evaluate(*sym.get_filename(), feature);
+    std::string filename = get<std::string>(sym, keys::filename, feature);
 
     // https://github.com/mapnik/mapnik/issues/1316
     bool snap_pixels = !mapnik::marker_cache::instance().is_uri(filename);
@@ -84,12 +84,14 @@ void agg_renderer<T>::process(markers_symbolizer const& sym,
         if (mark && *mark)
         {
             ras_ptr->reset();
+#if 0
             if (gamma_method_ != GAMMA_POWER || gamma_ != 1.0)
             {
                 ras_ptr->gamma(agg::gamma_power());
                 gamma_method_ = GAMMA_POWER;
                 gamma_ = 1.0;
             }
+#endif
             agg::trans_affine tr = agg::trans_affine_scaling(scale_factor_);
             box2d<double> clip_box = clipping_extent();
             if ((*mark)->is_vector())
@@ -106,8 +108,8 @@ void agg_renderer<T>::process(markers_symbolizer const& sym,
                                      rasterizer,
                                      detector_type > dispatch_type;
                 boost::optional<svg_path_ptr> const& stock_vector_marker = (*mark)->get_vector_data();
-                expression_ptr const& width_expr = sym.get_width();
-                expression_ptr const& height_expr = sym.get_height();
+                //expression_ptr const& width_expr = get_optional<value_integer>(sym, keys::width, feature);
+                //expression_ptr const& height_expr = get_optional<value_integer>(sym, keys::width, feature);
 
                 // special case for simple ellipse markers
                 // to allow for full control over rx/ry dimensions

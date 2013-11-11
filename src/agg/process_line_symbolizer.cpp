@@ -90,8 +90,11 @@ void agg_renderer<T>::process(line_symbolizer const& sym,
     pixfmt_comp_type pixf(buf);
     pixf.comp_op(static_cast<agg::comp_op_e>(get<value_integer>(sym, keys::comp_op, feature)));
     renderer_base renb(pixf);
+
     agg::trans_affine tr;
-    evaluate_transform(tr, feature, get<transform_type>(sym, keys::transform));
+    auto transform = get_optional<transform_type>(sym, keys::transform);
+    if (transform) evaluate_transform(tr, feature, *transform);
+
     box2d<double> clip_box = clipping_extent();
 
     bool clip = get<bool>(sym, keys::clip, feature);

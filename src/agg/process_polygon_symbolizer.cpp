@@ -59,7 +59,8 @@ void agg_renderer<T>::process(polygon_symbolizer const& sym,
     }
 #endif
     agg::trans_affine tr;
-    evaluate_transform(tr, feature, get<transform_type>(sym, keys::transform));
+    auto transform = get_optional<transform_type>(sym, keys::transform);
+    if (transform) evaluate_transform(tr, feature, *transform);
 
     box2d<double> clip_box = clipping_extent();
     typedef boost::mpl::vector<clip_poly_tag,transform_tag,affine_transform_tag,simplify_tag,smooth_tag> conv_types;
