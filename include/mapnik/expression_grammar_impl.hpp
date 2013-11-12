@@ -165,6 +165,7 @@ expression_grammar<Iterator>::expression_grammar(mapnik::transcoder const& tr)
         | ustring [_val = unicode_(_1) ]
         | lit("[mapnik::geometry_type]")[_val = construct<mapnik::geometry_type_attribute>()]
         | attr [_val = construct<mapnik::attribute>( _1 ) ]
+        | global_attr [_val = construct<mapnik::global_attribute>( _1 )]
         | '(' >> expr [_val = _1 ] >> ')'
         ;
 
@@ -179,11 +180,13 @@ expression_grammar<Iterator>::expression_grammar(mapnik::transcoder const& tr)
         >> *(unesc_char | "\\x" >> hex | (char_ - lit(_a)))
         >> lit(_a);
     attr %= '[' >> no_skip[+~char_(']')] >> ']';
+    global_attr %= '@' >> no_skip[+char_];
 #else
     ustring %= lit('\'')
         >> *(unesc_char | "\\x" >> hex | (char_ - lit('\'')))
         >> lit('\'');
     attr %= '[' >> lexeme[+(char_ - ']')] >> ']';
+    global_attr %= '@' >> lexime[+char_];
 #endif
 
 }

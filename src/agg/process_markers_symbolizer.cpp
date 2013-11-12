@@ -236,6 +236,7 @@ void agg_renderer<T>::process(markers_symbolizer const& sym,
         }
     }
 #endif
+
 }
 
 template void agg_renderer<image_32>::process(markers_symbolizer const&,

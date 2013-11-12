@@ -85,13 +85,14 @@ struct vector_markers_rasterizer_dispatch
         scale_factor_(scale_factor),
         snap_to_pixels_(snap_to_pixels)
     {
-        pixf_.comp_op(static_cast<agg::comp_op_e>(sym_.comp_op()));
+        pixf_.comp_op(static_cast<agg::comp_op_e>(get<value_integer>(sym_, keys::comp_op)));
     }
 
     template <typename T>
     void add_path(T & path)
     {
-        marker_placement_e placement_method = sym_.get_marker_placement();
+        marker_placement_e placement_method = static_cast<>(get<value_integer>(sym_, keys::marker_placement));
+        bool ignore_placement = get<bool>(sym_, keys::ignore_placement);
 
         if (placement_method != MARKER_LINE_PLACEMENT ||
             path.type() == mapnik::geometry_type::types::Point)
@@ -128,7 +129,7 @@ struct vector_markers_rasterizer_dispatch
                 detector_.has_placement(transformed_bbox))
             {
                 svg_renderer_.render(ras_, sl_, renb_, matrix, sym_.get_opacity(), bbox_);
-                if (!sym_.get_ignore_placement())
+                if (!ignore_placement)
                 {
                     detector_.insert(transformed_bbox);
                 }
@@ -143,7 +144,7 @@ struct vector_markers_rasterizer_dispatch
             double x = 0;
             double y = 0;
             double angle = 0;
-            while (placement.get_point(x, y, angle, sym_.get_ignore_placement()))
+            while (placement.get_point(x, y, angle, ignore_placement))
             {
                 agg::trans_affine matrix = marker_trans_;
                 matrix.rotate(angle);
@@ -202,8 +203,12 @@ struct raster_markers_rasterizer_dispatch
     template <typename T>
     void add_path(T & path)
     {
-        marker_placement_e placement_method = sym_.get_marker_placement();
+        marker_placement_e placement_method = static_cast<marker_placement_e>(get<value_integer>(sym_, keys::marker_placement));
+        bool allow_overlap = get<bool>(sym_, keys::allow_overlap);
         box2d<double> bbox_(0,0, src_.width(),src_.height());
+        double opacity = get<double>(sym_, keys::opacity);
+        double spacing  = get<double>(sym_, keys::spacing);
+        double max_error  = get<double>(sym_, keys::max_error);
 
         if (placement_method != MARKER_LINE_PLACEMENT ||
             path.type() == mapnik::geometry_type::types::Point)
@@ -229,11 +234,11 @@ struct raster_markers_rasterizer_dispatch
             matrix.translate(x,y);
             box2d<double> transformed_bbox = bbox_ * matrix;
 
-            if (sym_.get_allow_overlap() ||
+            if (allow_overlap ||
                 detector_.has_placement(transformed_bbox))
             {
-                render_raster_marker(matrix, sym_.get_opacity());
-                if (!sym_.get_ignore_placement())
+                render_raster_marker(matrix, opacity);
+                if (!ignore_placement)
                 {
                     detector_.insert(transformed_bbox);
                 }
@@ -242,16 +247,16 @@ struct raster_markers_rasterizer_dispatch
         else
         {
             markers_placement<T, label_collision_detector4> placement(path, bbox_, marker_trans_, detector_,
-                                                                      sym_.get_spacing() * scale_factor_,
-                                                                      sym_.get_max_error(),
-                                                                      sym_.get_allow_overlap());
+                                                                      spacing * scale_factor_,
+                                                                      max_error,
+                                                                      allow_overlap);
             double x, y, angle;
-            while (placement.get_point(x, y, angle,sym_.get_ignore_placement()))
+            while (placement.get_point(x, y, angle, ignore_placement))
             {
                 agg::trans_affine matrix = marker_trans_;
                 matrix.rotate(angle);
                 matrix.translate(x, y);
-                render_raster_marker(matrix, sym_.get_opacity());
+                render_raster_marker(matrix, opacity);
             }
         }
     }
@@ -339,8 +344,8 @@ private:
 template <typename T>
 void build_ellipse(T const& sym, mapnik::feature_impl const& feature, svg_storage_type & marker_ellipse, svg::svg_path_adapter & svg_path)
 {
-    expression_ptr const& width_expr = sym.get_width();
-    expression_ptr const& height_expr = sym.get_height();
+    expression_ptr const& width_expr  = get(sym, keys::width);
+    expression_ptr const& height_expr = get(sym, keys::height);
     double width = 0;
     double height = 0;
     if (width_expr && height_expr)

@@ -61,18 +61,23 @@ struct expression_attributes : boost::static_visitor<void>
     explicit expression_attributes(Container& names)
         : names_(names) {}
 
-    void operator() (value_type const& /*x*/) const
+    void operator() (value_type const& ) const
     {
     }
 
-    void operator() (geometry_type_attribute const& /*type*/) const
+    void operator() (geometry_type_attribute const&) const
     {
-        // do nothing
+        // no-op
     }
 
     void operator() (attribute const& attr) const
     {
         names_.insert(attr.name());
+    }
+
+    void operator() (global_attribute const& attr) const
+    {
+        // no-op
     }
 
     template <typename Tag>
