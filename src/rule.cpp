@@ -133,8 +133,8 @@ rule::rule(const rule& rhs, bool deep_copy)
       else_filter_(rhs.else_filter_),
       also_filter_(rhs.also_filter_)
 {
-    if (deep_copy) {
-
+    if (deep_copy)
+    {
         std::string expr = to_expression_string(*filter_);
         filter_ = parse_expression(expr,"utf8");
         symbolizers::const_iterator it  = syms_.begin();
@@ -147,10 +147,9 @@ rule::rule(const rule& rhs, bool deep_copy)
     }
 }
 
-rule& rule::operator=(rule const& rhs)
+rule& rule::operator=(rule rhs)
 {
-    rule tmp(rhs);
-    swap(tmp);
+    swap(rhs);
     return *this;
 }
 

@@ -147,7 +147,7 @@ public:
          double max_scale_denominator = std::numeric_limits<double>::infinity());
     rule(const rule& rhs, bool deep_copy = false);
 
-    rule& operator=(rule const& rhs);
+    rule& operator=(rule rhs);
     bool operator==(rule const& other);
     void set_max_scale(double scale);
     double get_max_scale() const;
@@ -157,7 +157,7 @@ public:
     std::string const& get_name() const;
     void append(symbolizer && sym);
     void remove_at(size_t index);
-    const symbolizers& get_symbolizers() const;
+    symbolizers const& get_symbolizers() const;
     symbolizers::const_iterator begin() const;
     symbolizers::const_iterator end() const;
     symbolizers::iterator begin();
