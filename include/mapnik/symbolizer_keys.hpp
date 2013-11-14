@@ -23,12 +23,14 @@
 #ifndef MAPNIK_SYMBOLIZER_KEYS_HPP
 #define MAPNIK_SYMBOLIZER_KEYS_HPP
 
+#include <string>
+#include <tuple>
 
 namespace mapnik {
 
 enum keys
 {
-    gamma = 1,
+    gamma = 0,
     gamma_method,
     opacity,
     alignment,
@@ -71,7 +73,8 @@ enum keys
     simplify_algorithm,
     simplify_tolerance,
     halo_rasterizer,
-    text_placements_
+    text_placements_,
+    MAX_SYMBOLIZER_KEY
 };
 
 }

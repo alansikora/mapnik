@@ -176,12 +176,14 @@ source = Split(
     projection.cpp
     proj_transform.cpp
     distance.cpp
+    save_map.cpp
     scale_denominator.cpp
     simplify.cpp
     memory_datasource.cpp
     stroke.cpp
     symbolizer.cpp
     symbolizer_helpers.cpp
+    symbolizer_keys.cpp
     unicode.cpp
     markers_symbolizer.cpp
     raster_colorizer.cpp

@@ -33,8 +33,8 @@ namespace mapnik
 {
 class Map;
 
-MAPNIK_DECL void save_map(Map const& map, std::string const& filename, bool explicit_defaults = false) {}
-MAPNIK_DECL std::string save_map_to_string(Map const& map, bool explicit_defaults = false) { return std::string(); }
+MAPNIK_DECL void save_map(Map const& map, std::string const& filename, bool explicit_defaults = false);
+MAPNIK_DECL std::string save_map_to_string(Map const& map, bool explicit_defaults = false);
 }
 
 #endif // MAPNIK_SAVE_MAP_HPP

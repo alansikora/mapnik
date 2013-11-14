@@ -59,7 +59,7 @@ MAPNIK_DECL void evaluate_transform(agg::trans_affine& tr, feature_impl const& f
 
 struct  MAPNIK_DECL symbolizer_base
 {
-    typedef boost::variant<bool,
+    typedef boost::variant<value_bool,
                            value_integer,
                            value_double,
                            std::string,
@@ -227,6 +227,8 @@ boost::optional<T> get_optional(symbolizer_base const& sym, keys key)
     }
     return boost::optional<T>();
 }
+
+std::tuple<const char*, mapnik::symbolizer_base::value_type> get_meta(mapnik::keys key);
 
 }
 

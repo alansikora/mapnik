@@ -57,56 +57,20 @@ using boost::optional;
 class serialize_symbolizer : public boost::static_visitor<>
 {
 public:
-    serialize_symbolizer( ptree & r , bool explicit_defaults):
-        rule_(r),
-        explicit_defaults_(explicit_defaults) {}
+    serialize_symbolizer( ptree & r , bool explicit_defaults)
+        : rule_(r),
+          explicit_defaults_(explicit_defaults) {}
 
     void operator () ( point_symbolizer const& sym )
     {
         ptree & sym_node = rule_.push_back(
             ptree::value_type("PointSymbolizer", ptree()))->second;
-
-        add_image_attributes( sym_node, sym );
-
-        point_symbolizer dfl;
-        if (sym.get_allow_overlap() != dfl.get_allow_overlap() || explicit_defaults_ )
-        {
-            set_attr( sym_node, "allow-overlap", sym.get_allow_overlap() );
-        }
-        if ( sym.get_opacity() != dfl.get_opacity() || explicit_defaults_ )
-        {
-            set_attr( sym_node, "opacity", sym.get_opacity() );
-        }
-        if ( sym.get_point_placement() != dfl.get_point_placement() || explicit_defaults_ )
-        {
-            set_attr( sym_node, "placement", sym.get_point_placement() );
-        }
-        if (sym.get_image_transform())
-        {
-            std::string tr_str = sym.get_image_transform_string();
-            set_attr( sym_node, "transform", tr_str );
-        }
-        serialize_symbolizer_base(sym_node, sym);
     }
 
     void operator () ( line_symbolizer const& sym )
     {
         ptree & sym_node = rule_.push_back(
             ptree::value_type("LineSymbolizer", ptree()))->second;
-
-        const stroke & strk =  sym.get_stroke();
-        add_stroke_attributes(sym_node, strk);
-
-        line_symbolizer dfl;
-        if ( sym.get_rasterizer() != dfl.get_rasterizer() || explicit_defaults_ )
-        {
-            set_attr( sym_node, "rasterizer", sym.get_rasterizer() );
-        }
-        if ( sym.offset() != dfl.offset() || explicit_defaults_ )
-        {
-            set_attr( sym_node, "offset", sym.offset() );
-        }
-        serialize_symbolizer_base(sym_node, sym);
     }
 
     void operator () ( line_pattern_symbolizer const& sym )
@@ -114,39 +78,12 @@ public:
         ptree & sym_node = rule_.push_back(
             ptree::value_type("LinePatternSymbolizer",
                               ptree()))->second;
-
-        if (sym.offset() != 0.0 || explicit_defaults_ )
-        {
-            set_attr( sym_node, "offset", sym.offset() );
-        }
-
-        add_image_attributes( sym_node, sym );
-        serialize_symbolizer_base(sym_node, sym);
     }
 
     void operator () ( polygon_symbolizer const& sym )
     {
         ptree & sym_node = rule_.push_back(
             ptree::value_type("PolygonSymbolizer", ptree()))->second;
-        polygon_symbolizer dfl;
-
-        if ( sym.get_fill() != dfl.get_fill() || explicit_defaults_ )
-        {
-            set_attr( sym_node, "fill", sym.get_fill() );
-        }
-        if ( sym.get_opacity() != dfl.get_opacity() || explicit_defaults_ )
-        {
-            set_attr( sym_node, "fill-opacity", sym.get_opacity() );
-        }
-        if ( sym.get_gamma() != dfl.get_gamma() || explicit_defaults_ )
-        {
-            set_attr( sym_node, "gamma", sym.get_gamma() );
-        }
-        if ( sym.get_gamma_method() != dfl.get_gamma_method() || explicit_defaults_ )
-        {
-            set_attr( sym_node, "gamma-method", sym.get_gamma_method() );
-        }
-        serialize_symbolizer_base(sym_node, sym);
     }
 
     void operator () ( polygon_pattern_symbolizer const& sym )
@@ -154,57 +91,12 @@ public:
         ptree & sym_node = rule_.push_back(
             ptree::value_type("PolygonPatternSymbolizer",
                               ptree()))->second;
-        polygon_pattern_symbolizer dfl(parse_path(""));
-
-        if ( sym.get_alignment() != dfl.get_alignment() || explicit_defaults_ )
-        {
-            set_attr( sym_node, "alignment", sym.get_alignment() );
-        }
-        if ( sym.get_gamma() != dfl.get_gamma() || explicit_defaults_ )
-        {
-            set_attr( sym_node, "gamma", sym.get_gamma() );
-        }
-        if ( sym.get_gamma_method() != dfl.get_gamma_method() || explicit_defaults_ )
-        {
-            set_attr( sym_node, "gamma-method", sym.get_gamma_method() );
-        }
-        add_image_attributes( sym_node, sym );
-        serialize_symbolizer_base(sym_node, sym);
     }
 
     void operator () ( raster_symbolizer const& sym )
     {
         ptree & sym_node = rule_.push_back(
             ptree::value_type("RasterSymbolizer", ptree()))->second;
-        raster_symbolizer dfl;
-
-        if ( sym.get_scaling_method() != dfl.get_scaling_method() || explicit_defaults_ )
-        {
-            set_attr( sym_node, "scaling", *scaling_method_to_string(sym.get_scaling_method()) );
-        }
-
-        if ( sym.get_opacity() != dfl.get_opacity() || explicit_defaults_ )
-        {
-            set_attr( sym_node, "opacity", sym.get_opacity() );
-        }
-
-        if ( sym.get_mesh_size() != dfl.get_mesh_size() || explicit_defaults_ )
-        {
-            set_attr( sym_node, "mesh-size", sym.get_mesh_size() );
-        }
-
-        if (sym.get_colorizer())
-        {
-            serialize_raster_colorizer(sym_node, sym.get_colorizer());
-        }
-
-        boost::optional<bool> premultiplied = sym.premultiplied();
-        if (premultiplied)
-        {
-            set_attr( sym_node, "premultiplied", *sym.premultiplied());
-        }
-
-        serialize_symbolizer_base(sym_node, sym);
     }
 
     void operator () ( shield_symbolizer const& sym )
@@ -212,42 +104,6 @@ public:
         ptree & sym_node = rule_.push_back(
             ptree::value_type("ShieldSymbolizer",
                               ptree()))->second;
-
-        add_font_attributes(sym_node, sym);
-        add_image_attributes(sym_node, sym);
-
-        // pseudo-default-construct a shield_symbolizer. It is used
-        // to avoid printing of attributes with default values without
-        // repeating the default values here.
-        // maybe add a real, explicit default-ctor?
-
-        shield_symbolizer dfl;
-
-        if (sym.get_unlock_image() != dfl.get_unlock_image() || explicit_defaults_)
-        {
-            set_attr(sym_node, "unlock-image", sym.get_unlock_image());
-        }
-
-        if (sym.get_placement_options()->defaults.format.text_opacity !=
-                dfl.get_placement_options()->defaults.format.text_opacity || explicit_defaults_)
-        {
-            set_attr(sym_node, "text-opacity", sym.get_placement_options()->defaults.format.text_opacity);
-        }
-        position displacement = sym.get_shield_displacement();
-        if (displacement.first != dfl.get_shield_displacement().first || explicit_defaults_)
-        {
-            set_attr(sym_node, "shield-dx", displacement.first);
-        }
-        if (displacement.second != dfl.get_shield_displacement().second || explicit_defaults_)
-        {
-            set_attr(sym_node, "shield-dy", displacement.second);
-        }
-        if (sym.get_image_transform())
-        {
-            std::string tr_str = sym.get_image_transform_string();
-            set_attr( sym_node, "transform", tr_str );
-        }
-        serialize_symbolizer_base(sym_node, sym);
     }
 
     void operator () ( text_symbolizer const& sym )
@@ -255,104 +111,18 @@ public:
         ptree & sym_node = rule_.push_back(
             ptree::value_type("TextSymbolizer",
                               ptree()))->second;
-
-        add_font_attributes( sym_node, sym);
-        serialize_symbolizer_base(sym_node, sym);
-        text_symbolizer dfl;
-        if (sym.get_halo_rasterizer() != dfl.get_halo_rasterizer() || explicit_defaults_)
-        {
-            set_attr(sym_node, "halo-rasterizer", sym.get_halo_rasterizer());
-        }
     }
 
     void operator () ( building_symbolizer const& sym )
     {
         ptree & sym_node = rule_.push_back(
             ptree::value_type("BuildingSymbolizer", ptree()))->second;
-        building_symbolizer dfl;
-
-        if ( sym.get_fill() != dfl.get_fill() || explicit_defaults_ )
-        {
-            set_attr( sym_node, "fill", sym.get_fill() );
-        }
-        if ( sym.get_opacity() != dfl.get_opacity() || explicit_defaults_ )
-        {
-            set_attr( sym_node, "fill-opacity", sym.get_opacity() );
-        }
-        if (sym.height())
-        {
-            set_attr( sym_node, "height", mapnik::to_expression_string(*sym.height()) );
-        }
-        serialize_symbolizer_base(sym_node, sym);
     }
 
     void operator () ( markers_symbolizer const& sym)
     {
         ptree & sym_node = rule_.push_back(
             ptree::value_type("MarkersSymbolizer", ptree()))->second;
-        markers_symbolizer dfl(parse_path("")); //TODO: Parameter?
-        if (sym.get_filename())
-        {
-            std::string filename = path_processor_type::to_string(*sym.get_filename());
-            set_attr( sym_node, "file", filename );
-        }
-        if (sym.get_allow_overlap() != dfl.get_allow_overlap() || explicit_defaults_)
-        {
-            set_attr( sym_node, "allow-overlap", sym.get_allow_overlap() );
-        }
-        if (sym.get_ignore_placement() != dfl.get_ignore_placement() || explicit_defaults_)
-        {
-            set_attr( sym_node, "ignore-placement", sym.get_ignore_placement() );
-        }
-        if (sym.get_spacing() != dfl.get_spacing() || explicit_defaults_)
-        {
-            set_attr( sym_node, "spacing", sym.get_spacing() );
-        }
-        if (sym.get_max_error() != dfl.get_max_error() || explicit_defaults_)
-        {
-            set_attr( sym_node, "max-error", sym.get_max_error() );
-        }
-        if (sym.get_fill() != dfl.get_fill() || explicit_defaults_)
-        {
-            set_attr( sym_node, "fill", sym.get_fill() );
-        }
-        if (sym.get_fill_opacity() != dfl.get_fill_opacity() || explicit_defaults_)
-        {
-            set_attr( sym_node, "fill-opacity", sym.get_fill_opacity() );
-        }
-        if (sym.get_opacity() != dfl.get_opacity() || explicit_defaults_)
-        {
-            set_attr( sym_node, "opacity", sym.get_opacity() );
-        }
-        if (sym.get_width() != dfl.get_width() || explicit_defaults_)
-        {
-            set_attr( sym_node, "width", to_expression_string(*sym.get_width()) );
-        }
-        if (sym.get_height() != dfl.get_height() || explicit_defaults_)
-        {
-            set_attr( sym_node, "height", to_expression_string(*sym.get_height()) );
-        }
-        if (sym.get_marker_placement() != dfl.get_marker_placement() || explicit_defaults_)
-        {
-            set_attr( sym_node, "placement", sym.get_marker_placement() );
-        }
-        if ( sym.get_marker_multi_policy() != dfl.get_marker_multi_policy() || explicit_defaults_ )
-        {
-            set_attr( sym_node, "multi-policy", sym.get_marker_multi_policy() );
-        }
-        if (sym.get_image_transform())
-        {
-            std::string tr_str = sym.get_image_transform_string();
-            set_attr( sym_node, "transform", tr_str );
-        }
-
-        boost::optional<stroke> const& strk = sym.get_stroke();
-        if (strk)
-        {
-            add_stroke_attributes(sym_node, *strk);
-        }
-
-        serialize_symbolizer_base(sym_node, sym);
     }
 
     template <typename Symbolizer>
@@ -368,38 +138,6 @@ public:
 #endif
 
 private:
-    serialize_symbolizer();
-
-    void serialize_symbolizer_base(ptree & node, symbolizer_base const& sym)
-    {
-        symbolizer_base dfl = symbolizer_base();
-        if (sym.get_transform())
-        {
-            std::string tr_str = sym.get_transform_string();
-            set_attr( node, "geometry-transform", tr_str );
-        }
-        if (sym.clip() != dfl.clip() || explicit_defaults_)
-        {
-            set_attr( node, "clip", sym.clip() );
-        }
-        if (sym.simplify_algorithm() != dfl.simplify_algorithm() || explicit_defaults_)
-        {
-            set_attr( node, "simplify-algorithm", *simplify_algorithm_to_string(sym.simplify_algorithm()) );
-        }
-        if (sym.simplify_tolerance() != dfl.simplify_tolerance() || explicit_defaults_)
-        {
-            set_attr( node, "simplify", sym.simplify_tolerance() );
-        }
-        if (sym.smooth() != dfl.smooth() || explicit_defaults_)
-        {
-            set_attr( node, "smooth", sym.smooth() );
-        }
-        if (sym.comp_op() != dfl.comp_op() || explicit_defaults_)
-        {
-            set_attr( node, "comp-op", *comp_op_to_string(sym.comp_op()) );
-        }
-    }
-
     void serialize_raster_colorizer(ptree & sym_node,
                                     raster_colorizer_ptr const& colorizer)
     {
@@ -427,96 +165,6 @@ private:
             set_attr(stop_node, "mode", stops[i].get_mode().as_string());
             if (stops[i].get_label()!=std::string(""))
                 set_attr(stop_node, "label", stops[i].get_label());
-        }
-    }
-
-    void add_image_attributes(ptree & node, symbolizer_with_image const& sym)
-    {
-        if (sym.get_filename())
-        {
-            std::string filename = path_processor_type::to_string( *sym.get_filename());
-            set_attr( node, "file", filename );
-        }
-        if (sym.get_opacity() != 1.0 || explicit_defaults_ )
-        {
-            set_attr( node, "opacity", sym.get_opacity() );
-        }
-    }
-
-    void add_font_attributes(ptree & node, const text_symbolizer & sym)
-    {
-        text_placements_ptr p = sym.get_placement_options();
-        p->defaults.to_xml(node, explicit_defaults_);
-        /* Known types:
-           - text_placements_dummy: no handling required
-           - text_placements_simple: positions string
-           - text_placements_list: list string
-        */
-        text_placements_simple *simple = dynamic_cast<text_placements_simple *>(p.get());
-        text_placements_list *list = dynamic_cast<text_placements_list *>(p.get());
-        if (simple) {
-            set_attr(node, "placement-type", "simple");
-            set_attr(node, "placements", simple->get_positions());
-        }
-        if (list) {
-            set_attr(node, "placement-type", "list");
-            unsigned i;
-            //dfl = last properties passed as default so only attributes that change are actually written
-            text_symbolizer_properties *dfl = &(list->defaults);
-            for (i=0; i < list->size(); i++) {
-                ptree &placement_node = node.push_back(ptree::value_type("Placement", ptree()))->second;
-                list->get(i).to_xml(placement_node, explicit_defaults_, *dfl);
-                dfl = &(list->get(i));
-            }
-        }
-    }
-
-    void add_stroke_attributes(ptree & node, const stroke & strk)
-    {
-
-        stroke dfl = stroke();
-
-        if ( strk.get_color() != dfl.get_color() || explicit_defaults_ )
-        {
-            set_attr( node, "stroke", strk.get_color() );
-        }
-        if ( strk.get_width() != dfl.get_width() || explicit_defaults_ )
-        {
-            set_attr( node, "stroke-width", strk.get_width() );
-        }
-        if ( strk.get_opacity() != dfl.get_opacity() || explicit_defaults_ )
-        {
-            set_attr( node, "stroke-opacity", strk.get_opacity() );
-        }
-        if ( strk.get_line_join() != dfl.get_line_join() || explicit_defaults_ )
-        {
-            set_attr( node, "stroke-linejoin", strk.get_line_join() );
-        }
-        if ( strk.get_line_cap() != dfl.get_line_cap() || explicit_defaults_ )
-        {
-            set_attr( node, "stroke-linecap", strk.get_line_cap() );
-        }
-        if ( strk.get_gamma() != dfl.get_gamma() || explicit_defaults_ )
-        {
-            set_attr( node, "stroke-gamma", strk.get_gamma());
-        }
-        if ( strk.get_gamma_method() != dfl.get_gamma_method() || explicit_defaults_ )
-        {
-            set_attr( node, "stroke-gamma-method", strk.get_gamma_method() );
-        }
-        if ( strk.dash_offset() != dfl.dash_offset() || explicit_defaults_ )
-        {
-            set_attr( node, "stroke-dashoffset", strk.dash_offset());
-        }
-        if ( ! strk.get_dash_array().empty() )
-        {
-            std::ostringstream os;
-            const dash_array & dashes = strk.get_dash_array();
-            for (unsigned i = 0; i < dashes.size(); ++i) {
-                os << dashes[i].first << ", " << dashes[i].second;
-                if ( i + 1 < dashes.size() ) os << ", ";
-            }
-            set_attr( node, "stroke-dasharray", os.str() );
         }
     }
 
