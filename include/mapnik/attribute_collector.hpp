@@ -176,6 +176,7 @@ struct symbolizer_attributes : public boost::static_visitor<>
 
     void operator () (shield_symbolizer const& sym)
     {
+        /*
         expression_set::const_iterator it;
         expression_set expressions;
         get<mapnik::text_placements_ptr>(sym, keys::text_placements_)->add_expressions(expressions);
@@ -192,6 +193,7 @@ struct symbolizer_attributes : public boost::static_visitor<>
 
         collect_transform(get<mapnik::transform_type>(sym, keys::transform));
         collect_transform(get<mapnik::transform_type>(sym, keys::image_transform));
+        */
     }
 
     void operator () (markers_symbolizer const& sym)

@@ -1186,18 +1186,22 @@ void map_parser::parse_text_symbolizer(rule & rule, xml_node const& sym)
     {
         text_placements_ptr placement_finder;
         optional<std::string> placement_type = sym.get_opt_attr<std::string>("placement-type");
-        if (placement_type) {
+        if (placement_type)
+        {
+            std::cerr << "PLACEMENT TYPE=" << *placement_type << std::endl;
             placement_finder = placements::registry::instance().from_xml(*placement_type, sym, fontsets_);
-        } else {
+        }
+        else
+        {
             placement_finder = std::make_shared<text_placements_dummy>();
             placement_finder->defaults.from_xml(sym, fontsets_);
         }
+
         if (strict_ &&
             !placement_finder->defaults.format.fontset)
         {
             ensure_font_face(placement_finder->defaults.format.face_name);
         }
-
         text_symbolizer text_symbol;
         parse_symbolizer_base(text_symbol, sym);
         put<text_placements_ptr>(text_symbol, keys::text_placements_, placement_finder);
