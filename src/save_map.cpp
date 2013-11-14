@@ -27,6 +27,7 @@
 #include <mapnik/debug.hpp>
 #include <mapnik/save_map.hpp>
 #include <mapnik/map.hpp>
+#include <mapnik/symbolizer.hpp>
 #include <mapnik/ptree_helpers.hpp>
 #include <mapnik/expression_string.hpp>
 #include <mapnik/raster_colorizer.hpp>
@@ -65,12 +66,14 @@ public:
     {
         ptree & sym_node = rule_.push_back(
             ptree::value_type("PointSymbolizer", ptree()))->second;
+        serialize_symbolizer_properties(sym_node,sym);
     }
 
     void operator () ( line_symbolizer const& sym )
     {
         ptree & sym_node = rule_.push_back(
             ptree::value_type("LineSymbolizer", ptree()))->second;
+        serialize_symbolizer_properties(sym_node,sym);
     }
 
     void operator () ( line_pattern_symbolizer const& sym )
@@ -78,6 +81,7 @@ public:
         ptree & sym_node = rule_.push_back(
             ptree::value_type("LinePatternSymbolizer",
                               ptree()))->second;
+        serialize_symbolizer_properties(sym_node,sym);
     }
 
     void operator () ( polygon_symbolizer const& sym )
@@ -91,6 +95,7 @@ public:
         ptree & sym_node = rule_.push_back(
             ptree::value_type("PolygonPatternSymbolizer",
                               ptree()))->second;
+        serialize_symbolizer_properties(sym_node,sym);
     }
 
     void operator () ( raster_symbolizer const& sym )
@@ -104,6 +109,7 @@ public:
         ptree & sym_node = rule_.push_back(
             ptree::value_type("ShieldSymbolizer",
                               ptree()))->second;
+        serialize_symbolizer_properties(sym_node,sym);
     }
 
     void operator () ( text_symbolizer const& sym )
@@ -111,18 +117,21 @@ public:
         ptree & sym_node = rule_.push_back(
             ptree::value_type("TextSymbolizer",
                               ptree()))->second;
+        serialize_symbolizer_properties(sym_node,sym);
     }
 
     void operator () ( building_symbolizer const& sym )
     {
         ptree & sym_node = rule_.push_back(
             ptree::value_type("BuildingSymbolizer", ptree()))->second;
+        serialize_symbolizer_properties(sym_node,sym);
     }
 
     void operator () ( markers_symbolizer const& sym)
     {
         ptree & sym_node = rule_.push_back(
             ptree::value_type("MarkersSymbolizer", ptree()))->second;
+        serialize_symbolizer_properties(sym_node,sym);
     }
 
     template <typename Symbolizer>
@@ -132,12 +141,21 @@ public:
         MAPNIK_LOG_WARN(save_map) << typeid(sym).name() << " is not supported";
     }
 #else
-    void operator () ( Symbolizer const& /*sym*/)
+    void operator () ( Symbolizer const&)
     {
     }
 #endif
 
 private:
+    void serialize_symbolizer_properties( ptree & sym_node, symbolizer_base const& sym)
+    {
+        for (auto const& prop : sym.properties)
+        {
+            auto meta = get_meta(prop.first);
+            set_attr( sym_node, std::get<0>(meta), prop.second);
+        }
+    }
+
     void serialize_raster_colorizer(ptree & sym_node,
                                     raster_colorizer_ptr const& colorizer)
     {
