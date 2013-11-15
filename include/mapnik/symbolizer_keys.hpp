@@ -28,7 +28,7 @@
 
 namespace mapnik {
 
-enum keys
+enum keys : std::uint8_t
 {
     gamma = 0,
     gamma_method,
