@@ -54,6 +54,38 @@ namespace mapnik
 using boost::property_tree::ptree;
 using boost::optional;
 
+class serialize_symbolizer_property : public boost::static_visitor<>
+{
+public:
+    serialize_symbolizer_property( std::string const& key, boost::property_tree::ptree & node)
+        : key_(key),
+          node_(node) {}
+
+    void operator () ( mapnik::value_integer val ) const
+    {
+        node_.put("<xmlattr>." + key_, val );
+    }
+
+    void operator () ( mapnik::value_double val ) const
+    {
+        node_.put("<xmlattr>." + key_, val );
+    }
+
+    void operator () ( std::string const& val ) const
+    {
+        node_.put("<xmlattr>." + key_, val );
+    }
+
+    template <typename T>
+    void operator () ( T const& val ) const
+    {
+        node_.put("<xmlattr>." + key_, val );
+    }
+
+private:
+    std::string const& key_;
+    boost::property_tree::ptree & node_;
+};
 
 class serialize_symbolizer : public boost::static_visitor<>
 {
@@ -88,6 +120,7 @@ public:
     {
         ptree & sym_node = rule_.push_back(
             ptree::value_type("PolygonSymbolizer", ptree()))->second;
+        serialize_symbolizer_properties(sym_node,sym);
     }
 
     void operator () ( polygon_pattern_symbolizer const& sym )
@@ -102,6 +135,7 @@ public:
     {
         ptree & sym_node = rule_.push_back(
             ptree::value_type("RasterSymbolizer", ptree()))->second;
+        serialize_symbolizer_properties(sym_node,sym);
     }
 
     void operator () ( shield_symbolizer const& sym )
@@ -147,12 +181,15 @@ public:
 #endif
 
 private:
+
     void serialize_symbolizer_properties( ptree & sym_node, symbolizer_base const& sym)
     {
         for (auto const& prop : sym.properties)
         {
             auto meta = get_meta(prop.first);
-            set_attr( sym_node, std::get<0>(meta), prop.second);
+            std::cerr << std::get<0>(meta) << ":" << prop.second << std::endl;
+            boost::apply_visitor(serialize_symbolizer_property(std::get<0>(meta), sym_node), prop.second);
+            //set_attr( sym_node, std::get<0>(meta), prop.second);
         }
     }
 
