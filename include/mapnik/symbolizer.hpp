@@ -40,6 +40,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <functional>
 
 namespace agg { struct trans_affine; }
 
@@ -70,8 +71,6 @@ struct  MAPNIK_DECL symbolizer_base
                            mapnik::text_placements_ptr> value_type;
     typedef mapnik::keys key_type;
     typedef std::map<key_type, value_type> cont_type;
-//symbolizer_base() {}
-//symbolizer_base(symbolizer_base const&) = delete;
     cont_type properties;
 };
 
@@ -149,7 +148,6 @@ struct extract_value : public boost::static_visitor<T1>
     template <typename T2>
     auto operator() (T2 const& val) const -> result_type
     {
-        //std::cerr << val << " " << typeid(val).name() <<" " << typeid(result_type).name() << std::endl;
         return result_type();
     }
 
@@ -169,7 +167,6 @@ struct extract_raw_value : public boost::static_visitor<T1>
     template <typename T2>
     auto operator() (T2 const& val) const -> result_type
     {
-        //std::cerr << val << " " << typeid(val).name() <<" " << typeid(result_type).name() << std::endl;
         return result_type();
     }
 };
@@ -228,7 +225,10 @@ boost::optional<T> get_optional(symbolizer_base const& sym, keys key)
     return boost::optional<T>();
 }
 
-std::tuple<const char*, mapnik::symbolizer_base::value_type> get_meta(mapnik::keys key);
+std::tuple<const char*, mapnik::symbolizer_base::value_type, std::function<std::string(mapnik::value_integer)> > const& get_meta(mapnik::keys key);
+
+// concrete symbolizers
+
 
 }
 
