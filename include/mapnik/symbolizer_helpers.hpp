@@ -23,8 +23,7 @@
 #define SYMBOLIZER_HELPERS_HPP
 
 //mapnik
-#include <mapnik/text_symbolizer.hpp>
-#include <mapnik/shield_symbolizer.hpp>
+#include <mapnik/symbolizer.hpp>
 #include <mapnik/feature.hpp>
 #include <mapnik/marker_cache.hpp>
 #include <mapnik/processed_text.hpp>

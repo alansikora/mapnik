@@ -34,7 +34,7 @@
 #include <mapnik/marker_cache.hpp>
 #include <mapnik/vertex_converters.hpp>
 #include <mapnik/parse_path.hpp>
-#include <mapnik/polygon_pattern_symbolizer.hpp>
+#include <mapnik/symbolizer.hpp>
 
 // agg
 #include "agg_basics.h"

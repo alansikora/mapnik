@@ -29,7 +29,7 @@
 #include <mapnik/graphics.hpp>
 #include <mapnik/agg_helpers.hpp>
 #include <mapnik/agg_rasterizer.hpp>
-#include <mapnik/polygon_symbolizer.hpp>
+#include <mapnik/symbolizer.hpp>
 #include <mapnik/vertex_converters.hpp>
 
 // agg

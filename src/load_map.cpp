@@ -30,6 +30,8 @@
 #include <mapnik/color.hpp>
 #include <mapnik/color_factory.hpp>
 #include <mapnik/symbolizer.hpp>
+#include <mapnik/gamma_method.hpp>
+#include <mapnik/stroke.hpp>
 #include <mapnik/feature_type_style.hpp>
 #include <mapnik/layer.hpp>
 #include <mapnik/datasource_cache.hpp>
@@ -43,7 +45,6 @@
 #include <mapnik/svg/svg_path_parser.hpp>
 #include <mapnik/text_placements/registry.hpp>
 #include <mapnik/text_placements/dummy.hpp>
-#include <mapnik/symbolizer.hpp>
 #include <mapnik/rule.hpp>
 #include <mapnik/config_error.hpp>
 #include <mapnik/util/dasharray_parser.hpp>

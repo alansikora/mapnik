@@ -27,7 +27,7 @@
 #include <mapnik/agg_helpers.hpp>
 #include <mapnik/agg_rasterizer.hpp>
 
-#include <mapnik/line_symbolizer.hpp>
+#include <mapnik/symbolizer.hpp>
 #include <mapnik/vertex_converters.hpp>
 
 // agg

@@ -27,7 +27,6 @@
 #include <mapnik/agg_rasterizer.hpp>
 #include <mapnik/segment.hpp>
 #include <mapnik/expression_evaluator.hpp>
-#include <mapnik/building_symbolizer.hpp>
 #include <mapnik/expression.hpp>
 
 // boost

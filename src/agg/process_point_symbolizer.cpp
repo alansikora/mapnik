@@ -27,7 +27,7 @@
 #include <mapnik/image_util.hpp>
 
 #include <mapnik/geom_util.hpp>
-#include <mapnik/point_symbolizer.hpp>
+#include <mapnik/symbolizer.hpp>
 #include <mapnik/marker.hpp>
 #include <mapnik/marker_cache.hpp>
 #include <mapnik/label_collision_detector.hpp>

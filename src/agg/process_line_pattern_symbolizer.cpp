@@ -29,7 +29,7 @@
 #include <mapnik/agg_pattern_source.hpp>
 #include <mapnik/marker.hpp>
 #include <mapnik/marker_cache.hpp>
-#include <mapnik/line_pattern_symbolizer.hpp>
+#include <mapnik/symbolizer.hpp>
 #include <mapnik/vertex_converters.hpp>
 #include <mapnik/noncopyable.hpp>
 #include <mapnik/parse_path.hpp>

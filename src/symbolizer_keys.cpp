@@ -24,7 +24,6 @@
 #include <mapnik/color.hpp>
 #include <mapnik/gamma_method.hpp>
 #include <mapnik/stroke.hpp>
-#include <mapnik/line_symbolizer.hpp>
 
 namespace mapnik {
 

@@ -33,7 +33,7 @@
 #include <mapnik/font_set.hpp>
 #include <mapnik/char_info.hpp>
 #include <mapnik/image_compositing.hpp>
-#include <mapnik/text_symbolizer.hpp>
+#include <mapnik/symbolizer.hpp>
 #include <mapnik/noncopyable.hpp>
 #include <mapnik/value_types.hpp>
 #include <mapnik/pixel_position.hpp>
