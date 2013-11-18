@@ -1153,11 +1153,11 @@ void map_parser::parse_polygon_pattern_symbolizer(rule & rule,
         file = ensure_relative_to_xml(file);
         ensure_exists(file);
         polygon_pattern_symbolizer symbol;
-        put(symbol, keys::filename, parse_path(file, sym.get_tree().path_expr_grammar));
+        put(symbol, keys::file, parse_path(file, sym.get_tree().path_expr_grammar));
 
         // pattern alignment
         pattern_alignment_e p_alignment = sym.get_attr<pattern_alignment_e>("alignment",LOCAL_ALIGNMENT);
-        put<value_integer>(symbol, keys::alignment, p_alignment);
+        put<enumeration_wrapper>(symbol, keys::alignment, enumeration_wrapper(p_alignment));
 
         // opacity
         optional<float> opacity = sym.get_opt_attr<float>("opacity");
@@ -1189,7 +1189,6 @@ void map_parser::parse_text_symbolizer(rule & rule, xml_node const& sym)
         optional<std::string> placement_type = sym.get_opt_attr<std::string>("placement-type");
         if (placement_type)
         {
-            std::cerr << "PLACEMENT TYPE=" << *placement_type << std::endl;
             placement_finder = placements::registry::instance().from_xml(*placement_type, sym, fontsets_);
         }
         else
@@ -1236,8 +1235,8 @@ void map_parser::parse_shield_symbolizer(rule & rule, xml_node const& sym)
             ensure_font_face(placement_finder->defaults.format.face_name);
         }
 
-        shield_symbolizer shield_symbol;// = shield_symbolizer(placement_finder);
-
+        shield_symbolizer shield_symbol;
+        put<text_placements_ptr>(shield_symbol, keys::text_placements_, placement_finder);
         optional<std::string> image_transform_wkt = sym.get_opt_attr<std::string>("transform");
         if (image_transform_wkt)
         {
@@ -1252,7 +1251,6 @@ void map_parser::parse_shield_symbolizer(rule & rule, xml_node const& sym)
         // shield displacement
         double shield_dx = sym.get_attr("shield-dx", 0.0);
         double shield_dy = sym.get_attr("shield-dy", 0.0);
-        //shield_symbol.set_shield_displacement(shield_dx,shield_dy);
         put(shield_symbol, keys::shield_dx, shield_dx);
         put(shield_symbol, keys::shield_dy, shield_dy);
 
@@ -1266,7 +1264,7 @@ void map_parser::parse_shield_symbolizer(rule & rule, xml_node const& sym)
         // text-opacity
         // TODO: Could be problematic because it is named opacity in TextSymbolizer but opacity has a diffrent meaning here.
         optional<double> text_opacity = sym.get_attr<double>("text-opacity", 1.0);
-        put(shield_symbol, keys::text_opacity, text_opacity);
+        put(shield_symbol, keys::text_opacity, *text_opacity);
         // unlock_image
         optional<boolean> unlock_image =
             sym.get_opt_attr<boolean>("unlock-image");
@@ -1306,7 +1304,7 @@ void map_parser::parse_shield_symbolizer(rule & rule, xml_node const& sym)
 
         file = ensure_relative_to_xml(file);
         ensure_exists(file);
-        put(shield_symbol, keys::filename, parse_path(file, sym.get_tree().path_expr_grammar));
+        put(shield_symbol, keys::file , parse_path(file, sym.get_tree().path_expr_grammar));
         parse_symbolizer_base(shield_symbol, sym);
         rule.append(std::move(shield_symbol));
     }
