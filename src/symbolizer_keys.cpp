@@ -24,35 +24,37 @@
 #include <mapnik/color.hpp>
 #include <mapnik/gamma_method.hpp>
 #include <mapnik/stroke.hpp>
+#include <mapnik/simplify.hpp>
 
 namespace mapnik {
 
-// name, default value, enumeration to string converter lambda
-static const std::tuple<char const*, symbolizer_base::value_type, std::function<std::string(value_integer)> > key_meta[MAX_SYMBOLIZER_KEY] =
+// tuple -> name, default value, enumeration to string converter lambda
+static const property_meta_type key_meta[MAX_SYMBOLIZER_KEY] =
 {
     { "gamma", 1.0, nullptr},
     { "gamma-method", static_cast<value_integer>(GAMMA_POWER), nullptr},
     { "opacity", 1.0, nullptr},
     { "alignment", static_cast<value_integer>(0), nullptr},
     { "offset", 0.0, nullptr},
-    { "comp-op", static_cast<value_integer>(src_over), [](value_integer val) { return *comp_op_to_string(composite_mode_e(val)); }},
+    { "comp-op", enumeration_wrapper(src_over), [](enumeration_wrapper e) { return *comp_op_to_string(composite_mode_e(e.value)); }},
     { "clip", false, nullptr},
     { "fill", mapnik::color("gray"), nullptr},
     { "fill-opacity", 1.0 , nullptr},
     { "stroke", mapnik::color("black"), nullptr},
     { "stroke-width", 1.0 , nullptr},
     { "stroke-opacity", 1.0, nullptr},
-    { "stroke-linejoin", static_cast<value_integer>(MITER_JOIN),
-      [](value_integer val) { return enumeration<line_join_enum,line_join_enum_MAX>(line_join_enum(val)).as_string();}},
-    { "stroke-linecap", static_cast<value_integer>(BUTT_CAP),
-      [](value_integer val) { return enumeration<line_cap_enum,line_cap_enum_MAX>(line_cap_enum(val)).as_string();}},
+    { "stroke-linejoin", enumeration_wrapper(MITER_JOIN),
+      [](enumeration_wrapper e) { return enumeration<line_join_enum,line_join_enum_MAX>(line_join_enum(e.value)).as_string();}},
+    { "stroke-linecap", enumeration_wrapper(BUTT_CAP),
+      [](enumeration_wrapper e) { return enumeration<line_cap_enum,line_cap_enum_MAX>(line_cap_enum(e.value)).as_string();}},
     { "stroke-gamma", 1.0, nullptr},
     { "stroke-gamma-method",static_cast<value_integer>(GAMMA_POWER), nullptr},
     { "stroke-dashoffset", static_cast<value_integer>(0), nullptr},
     { "stroke-dasharray", false, nullptr},
     { "stroke-miterlimit", 4.0, nullptr},
     { "transform", false, nullptr},
-    { "rasterizer-mode", static_cast<value_integer>(RASTERIZER_FULL), nullptr},
+    { "rasterizer-mode", enumeration_wrapper(RASTERIZER_FULL),
+      [](enumeration_wrapper e) { return enumeration<line_rasterizer_enum,line_rasterizer_enum_MAX>(line_rasterizer_enum(e.value)).as_string();}},
     { "image-transform", false, nullptr},
     { "spacing", 0.0, nullptr},
     { "max-error", 0.0, nullptr},
@@ -72,13 +74,15 @@ static const std::tuple<char const*, symbolizer_base::value_type, std::function<
     { "mesh-size", static_cast<value_integer>(0), nullptr},
     { "premultiplied", false, nullptr},
     { "smooth", false, nullptr},
-    { "simplify-algorithm", static_cast<value_integer>(0), nullptr},
+    { "simplify-algorithm", enumeration_wrapper(radial_distance),
+      [](enumeration_wrapper e) { return *simplify_algorithm_to_string(simplify_algorithm_e(e.value));}},
     { "simplify-tolerance", 0.0, nullptr},
-    { "halo-rasterizer", false, nullptr},
+    { "halo-rasterizer", enumeration_wrapper(HALO_RASTERIZER_FULL),
+      [](enumeration_wrapper e) { return enumeration<halo_rasterizer_enum,halo_rasterizer_enum_MAX>(halo_rasterizer_enum(e.value)).as_string();}},
     { "text-placements", false, nullptr}
 };
 
-std::tuple<const char*, mapnik::symbolizer_base::value_type, std::function<std::string(mapnik::value_integer)> > const& get_meta(mapnik::keys key)
+property_meta_type const& get_meta(mapnik::keys key)
 {
    return key_meta[key];
 }

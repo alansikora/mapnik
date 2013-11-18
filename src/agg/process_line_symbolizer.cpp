@@ -65,7 +65,7 @@ void agg_renderer<T>::process(line_symbolizer const& sym,
     unsigned b=col.blue();
     unsigned a=col.alpha();
 
-    double gamma = get<double>(sym, keys::gamma, feature);
+    double gamma = get<value_double>(sym, keys::gamma, feature);
     gamma_method_enum gamma_method = static_cast<gamma_method_enum>(get<value_integer>(sym, keys::gamma_method, feature));
     ras_ptr->reset();
 #if 0
@@ -88,7 +88,7 @@ void agg_renderer<T>::process(line_symbolizer const& sym,
                                simplify_tag, smooth_tag, dash_tag, stroke_tag> conv_types;
 
     pixfmt_comp_type pixf(buf);
-    pixf.comp_op(static_cast<agg::comp_op_e>(get<value_integer>(sym, keys::comp_op, feature)));
+    //pixf.comp_op(static_cast<agg::comp_op_e>(int(get<enumeration_wrapper>(sym, keys::comp_op, feature))));
     renderer_base renb(pixf);
 
     agg::trans_affine tr;

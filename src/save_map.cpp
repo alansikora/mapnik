@@ -54,36 +54,78 @@ namespace mapnik
 using boost::property_tree::ptree;
 using boost::optional;
 
+void serialize_text_placements(ptree & node, text_placements_ptr const& p, bool explicit_defaults = false)
+{
+    p->defaults.to_xml(node, explicit_defaults);
+    // Known types:
+    //   - text_placements_dummy: no handling required
+    //   - text_placements_simple: positions string
+    //   - text_placements_list: list string
+
+    text_placements_simple *simple = dynamic_cast<text_placements_simple *>(p.get());
+    text_placements_list *list = dynamic_cast<text_placements_list *>(p.get());
+
+    if (simple)
+    {
+        set_attr(node, "placement-type", "simple");
+        set_attr(node, "placements", simple->get_positions());
+    }
+    if (list)
+    {
+        set_attr(node, "placement-type", "list");
+        //dfl = last properties passed as default so only attributes that change are actually written
+        text_symbolizer_properties *dfl = &(list->defaults);
+        for (unsigned i=0; i < list->size(); ++i)
+        {
+            ptree & placement_node = node.push_back(ptree::value_type("Placement", ptree()))->second;
+            list->get(i).to_xml(placement_node, explicit_defaults, *dfl);
+            dfl = &(list->get(i));
+        }
+    }
+}
+
+template <typename Meta>
 class serialize_symbolizer_property : public boost::static_visitor<>
 {
 public:
-    serialize_symbolizer_property( std::string const& key, boost::property_tree::ptree & node)
-        : key_(key),
+    serialize_symbolizer_property(Meta  meta,
+                                  boost::property_tree::ptree & node)
+        : meta_(meta),
           node_(node) {}
 
-    void operator () ( mapnik::value_integer val ) const
+    void operator() ( mapnik::enumeration_wrapper const& e) const
     {
-        node_.put("<xmlattr>." + key_, val );
+        auto const& convert_fun_ptr(std::get<2>(meta_));
+        if ( convert_fun_ptr )
+        {
+            node_.put("<xmlattr>." + std::string(std::get<0>(meta_)), convert_fun_ptr(e));
+        }
     }
 
-    void operator () ( mapnik::value_double val ) const
+    void operator () ( path_expression_ptr const& expr) const
     {
-        node_.put("<xmlattr>." + key_, val );
+        if (expr)
+        {
+            node_.put("<xmlattr>." + std::string(std::get<0>(meta_)), path_processor::to_string(*expr));
+        }
     }
 
-    void operator () ( std::string const& val ) const
+    void operator () (text_placements_ptr const& expr) const
     {
-        node_.put("<xmlattr>." + key_, val );
+        if (expr)
+        {
+            serialize_text_placements(node_, expr);
+        }
     }
 
     template <typename T>
     void operator () ( T const& val ) const
     {
-        node_.put("<xmlattr>." + key_, val );
+        node_.put("<xmlattr>." + std::string(std::get<0>(meta_)), val );
     }
 
 private:
-    std::string const& key_;
+    Meta  meta_;
     boost::property_tree::ptree & node_;
 };
 
@@ -186,10 +228,7 @@ private:
     {
         for (auto const& prop : sym.properties)
         {
-            auto meta = get_meta(prop.first);
-            std::cerr << std::get<0>(meta) << ":" << prop.second << std::endl;
-            boost::apply_visitor(serialize_symbolizer_property(std::get<0>(meta), sym_node), prop.second);
-            //set_attr( sym_node, std::get<0>(meta), prop.second);
+            boost::apply_visitor(serialize_symbolizer_property<property_meta_type>(get_meta(prop.first), sym_node), prop.second);
         }
     }
 

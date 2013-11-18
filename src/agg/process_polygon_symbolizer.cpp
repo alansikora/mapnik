@@ -101,7 +101,7 @@ void agg_renderer<T>::process(polygon_symbolizer const& sym,
     typedef agg::renderer_base<pixfmt_comp_type> renderer_base;
     typedef agg::renderer_scanline_aa_solid<renderer_base> renderer_type;
     pixfmt_comp_type pixf(buf);
-    pixf.comp_op(static_cast<agg::comp_op_e>(get<value_integer>(sym, keys::comp_op, feature)));
+    pixf.comp_op(static_cast<agg::comp_op_e>(int(get<enumeration_wrapper>(sym, keys::comp_op, feature))));
     renderer_base renb(pixf);
     renderer_type ren(renb);
     ren.color(agg::rgba8_pre(r, g, b, int(a * opacity)));

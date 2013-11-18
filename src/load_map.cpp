@@ -865,14 +865,14 @@ void map_parser::parse_symbolizer_base(symbolizer_base &sym, xml_node const &pt)
         optional<composite_mode_e> comp_op = comp_op_from_string(*comp_op_name);
         if (comp_op)
         {
-            put<value_integer>(sym, keys::comp_op, *comp_op);
+            put<enumeration_wrapper>(sym, keys::comp_op, enumeration_wrapper(*comp_op));
         }
         else
         {
             throw config_error("failed to parse comp-op: '" + *comp_op_name + "'");
         }
     }
-    else put<value_integer>(sym, keys::comp_op, src_over);
+    else put<enumeration_wrapper>(sym, keys::comp_op, enumeration_wrapper(src_over));
 
     optional<std::string> geometry_transform_wkt = pt.get_opt_attr<std::string>("geometry-transform");
     if (geometry_transform_wkt)
@@ -897,7 +897,7 @@ void map_parser::parse_symbolizer_base(symbolizer_base &sym, xml_node const &pt)
         optional<simplify_algorithm_e> simplify_algorithm = simplify_algorithm_from_string(*simplify_algorithm_name);
         if (simplify_algorithm)
         {
-            put<value_integer>(sym, keys::simplify_algorithm, *simplify_algorithm);
+            put<enumeration_wrapper>(sym, keys::simplify_algorithm, enumeration_wrapper(*simplify_algorithm));
         }
         else
         {
@@ -1207,8 +1207,8 @@ void map_parser::parse_text_symbolizer(rule & rule, xml_node const& sym)
         parse_symbolizer_base(text_symbol, sym);
         put<text_placements_ptr>(text_symbol, keys::text_placements_, placement_finder);
         optional<halo_rasterizer_e> halo_rasterizer_ = sym.get_opt_attr<halo_rasterizer_e>("halo-rasterizer");
-        if (halo_rasterizer_) put<value_integer>(text_symbol, keys::halo_rasterizer, *halo_rasterizer_);
-        else put<value_integer>(text_symbol, keys::halo_rasterizer, HALO_RASTERIZER_FULL);
+        if (halo_rasterizer_) put<enumeration_wrapper>(text_symbol, keys::halo_rasterizer, enumeration_wrapper(*halo_rasterizer_));
+        else put<enumeration_wrapper>(text_symbol, keys::halo_rasterizer, enumeration_wrapper(HALO_RASTERIZER_FULL));
         rule.append(std::move(text_symbol));
     }
     catch (config_error const& ex)
@@ -1343,11 +1343,11 @@ bool map_parser::parse_stroke(symbolizer_base & symbol, xml_node const & sym)
 
     // stroke-linejoin
     optional<line_join_e> line_join = sym.get_opt_attr<line_join_e>("stroke-linejoin");
-    if (line_join) put<value_integer>(symbol, keys::stroke_linejoin, *line_join);
+    if (line_join) put<enumeration_wrapper>(symbol, keys::stroke_linejoin, enumeration_wrapper(*line_join));
 
     // stroke-linecap
     optional<line_cap_e> line_cap = sym.get_opt_attr<line_cap_e>("stroke-linecap");
-    if (line_cap) put<value_integer>(symbol, keys::stroke_linecap, *line_cap);
+    if (line_cap) put<enumeration_wrapper>(symbol, keys::stroke_linecap, enumeration_wrapper(*line_cap));
 
     // stroke-gamma
     optional<double> gamma = sym.get_opt_attr<double>("stroke-gamma");
@@ -1411,7 +1411,7 @@ void map_parser::parse_line_symbolizer(rule & rule, xml_node const & sym)
         if (offset) put(symbol, keys::offset, *offset);
 
         line_rasterizer_e rasterizer = sym.get_attr<line_rasterizer_e>("rasterizer", RASTERIZER_FULL);
-        put<value_integer>(symbol, keys::rasterizer_mode, rasterizer);
+        put<enumeration_wrapper>(symbol, keys::rasterizer_mode, enumeration_wrapper(rasterizer));
 
         parse_symbolizer_base(symbol, sym);
         rule.append(std::move(symbol));

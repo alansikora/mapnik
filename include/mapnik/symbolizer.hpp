@@ -58,10 +58,26 @@ class feature_impl;
 MAPNIK_DECL void evaluate_transform(agg::trans_affine& tr, feature_impl const& feature,
                                     transform_type const& trans_expr);
 
+struct enumeration_wrapper
+{
+    int value;
+    enumeration_wrapper()
+        : value(0) {}
+    template <typename T>
+    explicit enumeration_wrapper(T value_)
+        : value(value_) {}
+
+    inline operator int() const
+    {
+        return value;
+    }
+};
+
 struct  MAPNIK_DECL symbolizer_base
 {
     typedef boost::variant<value_bool,
                            value_integer,
+                           enumeration_wrapper,
                            value_double,
                            std::string,
                            mapnik::color,
@@ -118,6 +134,16 @@ struct evaluate_expression_wrapper<mapnik::color>
     mapnik::color operator() (T1 const& expr, T2 const& feature) const
     {
         return mapnik::color();
+    }
+};
+
+template <>
+struct evaluate_expression_wrapper<mapnik::enumeration_wrapper>
+{
+    template <typename T1, typename T2>
+    mapnik::enumeration_wrapper operator() (T1 const& expr, T2 const& feature) const
+    {
+        return mapnik::enumeration_wrapper(0);
     }
 };
 
@@ -225,7 +251,8 @@ boost::optional<T> get_optional(symbolizer_base const& sym, keys key)
     return boost::optional<T>();
 }
 
-std::tuple<const char*, mapnik::symbolizer_base::value_type, std::function<std::string(mapnik::value_integer)> > const& get_meta(mapnik::keys key);
+typedef std::tuple<const char*, mapnik::symbolizer_base::value_type, std::function<std::string(enumeration_wrapper)> > property_meta_type;
+property_meta_type const& get_meta(mapnik::keys key);
 
 // concrete symbolizer types
 struct MAPNIK_DECL point_symbolizer : public symbolizer_base {};
