@@ -37,6 +37,7 @@
 #include <mapnik/text_placements/base.hpp>
 #include <mapnik/text_placements/dummy.hpp>
 // stl
+#include <type_traits>
 #include <memory>
 #include <vector>
 #include <string>
@@ -112,20 +113,65 @@ struct evaluate_path_wrapper<std::string>
     }
 };
 
+namespace detail {
+
+// enum
+template <typename T, bool is_enum = true>
+struct expression_result
+{
+    typedef T result_type;
+    static result_type convert(value_type const& val)
+    {
+        return static_cast<T>(val.convert<value_integer>());
+    }
+};
+
+template <typename T>
+struct expression_result<T,false>
+{
+    typedef T result_type;
+    static result_type convert(value_type const& val)
+    {
+        return val.convert<T>();
+    }
+};
+
+// enum
+template <typename T, bool is_enum = true>
+struct enumeration_result
+{
+    typedef T result_type;
+    static result_type convert(enumeration_wrapper const& e)
+    {
+        return static_cast<result_type>(e.value);
+    }
+};
+
+template <typename T>
+struct enumeration_result<T,false>
+{
+    typedef T result_type;
+    static result_type convert(enumeration_wrapper const& e)
+    {
+        return result_type();// FAIL
+    }
+};
+
+}
 
 template <typename T>
 struct evaluate_expression_wrapper
 {
     typedef T result_type;
+
     template <typename T1, typename T2>
     result_type operator() (T1 const& expr, T2 const& feature) const
     {
         mapnik::value_type result = boost::apply_visitor(mapnik::evaluate<mapnik::feature_impl,mapnik::value_type>(feature), expr);
-        return result.convert<result_type>();
+        return detail::expression_result<result_type, std::is_enum<result_type>::value>::convert(result);
     }
 };
 
-// specializations for not supported types
 // mapnik::color
 template <>
 struct evaluate_expression_wrapper<mapnik::color>
@@ -137,6 +183,7 @@ struct evaluate_expression_wrapper<mapnik::color>
     }
 };
 
+// enumeration wrapper
 template <>
 struct evaluate_expression_wrapper<mapnik::enumeration_wrapper>
 {
@@ -148,10 +195,10 @@ struct evaluate_expression_wrapper<mapnik::enumeration_wrapper>
 };
 
 
-template <typename T1>
-struct extract_value : public boost::static_visitor<T1>
+template <typename T>
+struct extract_value : public boost::static_visitor<T>
 {
-    typedef T1 result_type;
+    typedef T result_type;
 
     extract_value(mapnik::feature_impl const& feature)
         : feature_(feature) {}
@@ -171,9 +218,15 @@ struct extract_value : public boost::static_visitor<T1>
         return val;
     }
 
-    template <typename T2>
-    auto operator() (T2 const& val) const -> result_type
+    auto operator() (mapnik::enumeration_wrapper const& e) const -> result_type
     {
+        return detail::enumeration_result<result_type, std::is_enum<result_type>::value>::convert(e);
+    }
+
+    template <typename T1>
+    auto operator() (T1 const& val) const -> result_type
+    {
+        std::cerr << typeid(result_type).name() << " == " << typeid(T1).name() << std::endl;
         return result_type();
     }
 
