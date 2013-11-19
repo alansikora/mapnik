@@ -628,6 +628,86 @@ struct convert<value_bool> : public boost::static_visitor<value_bool>
 };
 
 template <>
+struct convert<value_double> : public boost::static_visitor<value_double>
+{
+    value_double operator() (value_double val) const
+    {
+        return val;
+    }
+
+    value_double operator() (value_integer val) const
+    {
+        return static_cast<value_double>(val);
+    }
+
+    value_double operator() (value_bool val) const
+    {
+        return static_cast<value_double>(val);
+    }
+
+    value_double operator() (std::string const& val) const
+    {
+        value_double result;
+        if (util::string2double(val,result))
+            return result;
+        return 0;
+    }
+
+    value_double operator() (value_unicode_string const& val) const
+    {
+        std::string utf8;
+        to_utf8(val,utf8);
+        return operator()(utf8);
+    }
+
+    value_double operator() (value_null const& val) const
+    {
+        boost::ignore_unused_variable_warning(val);
+        return 0.0;
+    }
+};
+
+template <>
+struct convert<value_integer> : public boost::static_visitor<value_integer>
+{
+    value_integer operator() (value_integer val) const
+    {
+        return val;
+    }
+
+    value_integer operator() (value_double val) const
+    {
+        return static_cast<value_integer>(rint(val));
+    }
+
+    value_integer operator() (value_bool val) const
+    {
+        return static_cast<value_integer>(val);
+    }
+
+    value_integer operator() (std::string const& val) const
+    {
+        value_integer result;
+        if (util::string2int(val,result))
+            return result;
+        return value_integer(0);
+    }
+
+    value_integer operator() (value_unicode_string const& val) const
+    {
+        std::string utf8;
+        to_utf8(val,utf8);
+        return operator()(utf8);
+    }
+
+    value_integer operator() (value_null const& val) const
+    {
+        boost::ignore_unused_variable_warning(val);
+        return value_integer(0);
+    }
+};
+
+template <>
 struct convert<std::string> : public boost::static_visitor<std::string>
 {
     template <typename T>
@@ -723,86 +803,6 @@ struct to_expression_string : public boost::static_visitor<std::string>
     {
         boost::ignore_unused_variable_warning(val);
         return "null";
-    }
-};
-
-template <>
-struct convert<value_double> : public boost::static_visitor<value_double>
-{
-    value_double operator() (value_double val) const
-    {
-        return val;
-    }
-
-    value_double operator() (value_integer val) const
-    {
-        return static_cast<value_double>(val);
-    }
-
-    value_double operator() (value_bool val) const
-    {
-        return static_cast<value_double>(val);
-    }
-
-    value_double operator() (std::string const& val) const
-    {
-        value_double result;
-        if (util::string2double(val,result))
-            return result;
-        return 0;
-    }
-
-    value_double operator() (value_unicode_string const& val) const
-    {
-        std::string utf8;
-        to_utf8(val,utf8);
-        return operator()(utf8);
-    }
-
-    value_double operator() (value_null const& val) const
-    {
-        boost::ignore_unused_variable_warning(val);
-        return 0.0;
-    }
-};
-
-template <>
-struct convert<value_integer> : public boost::static_visitor<value_integer>
-{
-    value_integer operator() (value_integer val) const
-    {
-        return val;
-    }
-
-    value_integer operator() (value_double val) const
-    {
-        return static_cast<value_integer>(rint(val));
-    }
-
-    value_integer operator() (value_bool val) const
-    {
-        return static_cast<value_integer>(val);
-    }
-
-    value_integer operator() (std::string const& val) const
-    {
-        value_integer result;
-        if (util::string2int(val,result))
-            return result;
-        return value_integer(0);
-    }
-
-    value_integer operator() (value_unicode_string const& val) const
-    {
-        std::string utf8;
-        to_utf8(val,utf8);
-        return operator()(utf8);
-    }
-
-    value_integer operator() (value_null const& val) const
-    {
-        boost::ignore_unused_variable_warning(val);
-        return value_integer(0);
     }
 };
 
