@@ -45,12 +45,12 @@ void agg_renderer<T>::process(text_symbolizer const& sym,
             t_, font_manager_, *detector_,
             clip_box);
 
-    halo_rasterizer_enum halo_rasterizer = static_cast<halo_rasterizer_enum>(get<value_integer>(sym, keys::halo_rasterizer, feature));
-    composite_mode_e comp_op = static_cast<composite_mode_e>(get<value_integer>(sym, keys::comp_op, feature));
+    halo_rasterizer_enum halo_rasterizer = get<halo_rasterizer_enum>(sym, keys::halo_rasterizer, feature);
+    composite_mode_e comp_op = get<composite_mode_e>(sym, keys::comp_op, feature);
     text_renderer<T> ren(*current_buffer_,
                          font_manager_,
                          halo_rasterizer,
-                         composite_mode_e::src_over,
+                         comp_op,
                          scale_factor_);
 
     while (helper.next())

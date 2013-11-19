@@ -50,14 +50,15 @@ void agg_renderer<T>::process(polygon_symbolizer const& sym,
 {
 
     ras_ptr->reset();
-#if 0
-    if (sym.get_gamma() != gamma_ || sym.get_gamma_method() != gamma_method_)
+    double gamma = get<value_double>(sym, keys::gamma, feature);
+    gamma_method_enum gamma_method = get<gamma_method_enum>(sym, keys::gamma_method, feature);
+    if (gamma != gamma_ || gamma_method != gamma_method_)
     {
-        set_gamma_method(sym, ras_ptr);
-        gamma_method_ = sym.get_gamma_method();
-        gamma_ = sym.get_gamma();
+        //set_gamma_method(sym, ras_ptr, feature); // FIXME
+        gamma_method_ = gamma_method;
+        gamma_ = gamma;
     }
-#endif
+
     agg::trans_affine tr;
     auto transform = get_optional<transform_type>(sym, keys::transform);
     if (transform) evaluate_transform(tr, feature, *transform);
@@ -101,7 +102,7 @@ void agg_renderer<T>::process(polygon_symbolizer const& sym,
     typedef agg::renderer_base<pixfmt_comp_type> renderer_base;
     typedef agg::renderer_scanline_aa_solid<renderer_base> renderer_type;
     pixfmt_comp_type pixf(buf);
-    pixf.comp_op(static_cast<agg::comp_op_e>(int(get<enumeration_wrapper>(sym, keys::comp_op, feature))));
+    pixf.comp_op(get<agg::comp_op_e>(sym, keys::comp_op, feature));
     renderer_base renb(pixf);
     renderer_type ren(renb);
     ren.color(agg::rgba8_pre(r, g, b, int(a * opacity)));
