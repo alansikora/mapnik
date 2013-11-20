@@ -163,5 +163,4 @@ static const char * text_transform_strings[] = {
 
 IMPLEMENT_ENUM( text_transform_e, text_transform_strings )
 
-
 } // end of namespace mapnik

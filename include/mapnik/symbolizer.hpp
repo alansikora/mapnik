@@ -42,6 +42,8 @@
 #include <vector>
 #include <string>
 #include <functional>
+// boost
+#include <boost/variant/variant_fwd.hpp>
 
 namespace agg { struct trans_affine; }
 
@@ -56,7 +58,8 @@ typedef std::shared_ptr<transform_list>   transform_list_ptr;
 typedef transform_list_ptr transform_type;
 class feature_impl;
 
-MAPNIK_DECL void evaluate_transform(agg::trans_affine& tr, feature_impl const& feature,
+MAPNIK_DECL void evaluate_transform(agg::trans_affine& tr,
+                                    feature_impl const& feature,
                                     transform_type const& trans_expr);
 
 struct enumeration_wrapper
@@ -306,6 +309,7 @@ boost::optional<T> get_optional(symbolizer_base const& sym, keys key)
 typedef std::tuple<const char*, mapnik::symbolizer_base::value_type, std::function<std::string(enumeration_wrapper)> > property_meta_type;
 property_meta_type const& get_meta(mapnik::keys key);
 
+
 // concrete symbolizer types
 struct MAPNIK_DECL point_symbolizer : public symbolizer_base {};
 struct MAPNIK_DECL line_symbolizer : public symbolizer_base {};
@@ -319,9 +323,21 @@ struct MAPNIK_DECL raster_symbolizer : public symbolizer_base {};
 struct MAPNIK_DECL building_symbolizer : public symbolizer_base {};
 struct MAPNIK_DECL debug_symbolizer : public symbolizer_base {};
 
+// symbolizer
+typedef boost::variant<point_symbolizer,
+                       line_symbolizer,
+                       line_pattern_symbolizer,
+                       polygon_symbolizer,
+                       polygon_pattern_symbolizer,
+                       raster_symbolizer,
+                       shield_symbolizer,
+                       text_symbolizer,
+                       building_symbolizer,
+                       markers_symbolizer,
+                       debug_symbolizer> symbolizer;
+
 
 // enum
-
 enum line_rasterizer_enum
 {
     RASTERIZER_FULL,           // agg::renderer_scanline_aa_solid
