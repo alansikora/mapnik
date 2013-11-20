@@ -32,7 +32,7 @@
 #include <mapnik/formatting/format.hpp>
 #include <mapnik/formatting/expression_format.hpp>
 #include <mapnik/processed_text.hpp>
-#include <mapnik/text_symbolizer.hpp>
+#include <mapnik/symbolizer.hpp>
 
 #include "mapnik_enumeration.hpp"
 #include "mapnik_threads.hpp"
@@ -322,6 +322,7 @@ void insert_expression(expression_set *set, expression_ptr p)
     set->insert(p);
 }
 
+/*
 char_properties & get_format(text_symbolizer const& sym)
 {
     return sym.get_placement_options()->defaults.format;
@@ -341,7 +342,7 @@ void set_properties(text_symbolizer const& sym, text_symbolizer_properties & def
 {
     sym.get_placement_options()->defaults = defaults;
 }
-
+*/
 }
 
 void export_text_placement()
@@ -389,31 +390,6 @@ void export_text_placement()
 
     class_<text_symbolizer>("TextSymbolizer",
                             init<>())
-        .def(init<expression_ptr, std::string const&, unsigned, color const&>())
-        .add_property("placements",
-                      &text_symbolizer::get_placement_options,
-                      &text_symbolizer::set_placement_options)
-        //TODO: Check return policy, is there a better way to do this?
-        .add_property("format",
-                      make_function(&get_format, return_value_policy<reference_existing_object>()),
-                      &set_format,
-                      "Shortcut for placements.defaults.default_format")
-        .add_property("properties",
-                      make_function(&get_properties, return_value_policy<reference_existing_object>()),
-                      &set_properties,
-                      "Shortcut for placements.defaults")
-        .add_property("comp_op",
-                      &text_symbolizer::comp_op,
-                      &text_symbolizer::set_comp_op,
-                      "Set/get the comp-op")
-        .add_property("clip",
-                      &text_symbolizer::clip,
-                      &text_symbolizer::set_clip,
-                      "Set/get the text geometry's clipping status")
-        .add_property("halo_rasterizer",
-                      &text_symbolizer::get_halo_rasterizer,
-                      &text_symbolizer::set_halo_rasterizer,
-                      "Set/get the halo rasterizer method")
         ;
 
 

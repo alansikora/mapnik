@@ -290,11 +290,12 @@ class _ProcessedText(ProcessedText, _injector):
         #More pythonic name
         self.push_back(properties, text)
 
-class _Symbolizers(Symbolizers,_injector):
-
-    def __getitem__(self, idx):
-        sym = Symbolizers._c___getitem__(self, idx)
-        return sym.symbol()
+# FIXME
+#class _Symbolizers(Symbolizers,_injector):
+#
+#    def __getitem__(self, idx):
+#        sym = Symbolizers._c___getitem__(self, idx)
+#        return sym.symbol()
 
 def _add_symbol_method_to_symbolizers(vars=globals()):
 
