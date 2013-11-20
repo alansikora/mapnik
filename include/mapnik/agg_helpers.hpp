@@ -39,7 +39,7 @@ template <typename T0, typename T1, typename T2>
 void set_gamma_method(T0 const& obj, T1 & ras_ptr, T2 const& feature)
 {
 
-    switch (static_cast<gamma_method_enum>(get<value_integer>(obj, keys::gamma_method, feature)))
+    switch (get<gamma_method_enum>(obj, keys::gamma_method, feature))
     {
     case GAMMA_POWER:
         ras_ptr->gamma(agg::gamma_power(obj.get_gamma()));
@@ -64,7 +64,7 @@ void set_gamma_method(T0 const& obj, T1 & ras_ptr, T2 const& feature)
 template <typename Symbolizer,typename PathType, typename Feature>
 void set_join_caps(Symbolizer const& sym, PathType & stroke, Feature const& feature)
 {
-    line_join_enum join = static_cast<line_join_enum>(get<value_integer>(sym, keys::stroke_linejoin, feature));
+    line_join_enum join = get<line_join_enum>(sym, keys::stroke_linejoin, feature);
     switch (join)
     {
     case MITER_JOIN:
@@ -80,7 +80,7 @@ void set_join_caps(Symbolizer const& sym, PathType & stroke, Feature const& feat
         stroke.generator().line_join(agg::bevel_join);
     }
 
-    line_cap_enum cap = static_cast<line_cap_enum>(sym ,"stroke-linecap", feature);
+    line_cap_enum cap = get<line_cap_enum>(sym ,"stroke-linecap", feature);
 
     switch (cap)
     {
@@ -133,7 +133,7 @@ void set_join_caps(Symbolizer const& sym, PathType & stroke)
 template <typename Symbolizer,typename Rasterizer,typename Feature>
 void set_join_caps_aa(Symbolizer const& sym, Rasterizer & ras, Feature & feature)
 {
-    line_join_enum join = static_cast<line_join_enum>(get<value_integer>(sym, keys::stroke_linejoin, feature));
+    line_join_enum join = get<line_join_enum>(sym, keys::stroke_linejoin, feature);
     switch (join)
     {
     case MITER_JOIN:
@@ -149,7 +149,7 @@ void set_join_caps_aa(Symbolizer const& sym, Rasterizer & ras, Feature & feature
         ras.line_join(agg::outline_no_join);
     }
 
-    line_cap_enum cap = static_cast<line_cap_enum>(get<value_integer>(sym, keys::stroke_linecap, feature));
+    line_cap_enum cap = get<line_cap_enum>(sym, keys::stroke_linecap, feature);
 
     switch (cap)
     {
