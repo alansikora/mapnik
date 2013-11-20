@@ -27,7 +27,7 @@
 #include <mapnik/feature.hpp>
 #include <mapnik/geometry.hpp>
 #include <mapnik/geom_util.hpp>
-#include <mapnik/markers_symbolizer.hpp>
+#include <mapnik/symbolizer.hpp>
 #include <mapnik/expression_evaluator.hpp>
 #include <mapnik/svg/svg_path_attributes.hpp>
 #include <mapnik/svg/svg_converter.hpp>
@@ -65,15 +65,15 @@ struct vector_markers_rasterizer_dispatch
     typedef typename renderer_base::pixfmt_type pixfmt_type;
 
     vector_markers_rasterizer_dispatch(BufferType & render_buffer,
-                                SvgRenderer & svg_renderer,
-                                Rasterizer & ras,
-                                box2d<double> const& bbox,
-                                agg::trans_affine const& marker_trans,
-                                markers_symbolizer const& sym,
-                                Detector & detector,
-                                double scale_factor,
-                                bool snap_to_pixels)
-        : buf_(render_buffer),
+                                       SvgRenderer & svg_renderer,
+                                       Rasterizer & ras,
+                                       box2d<double> const& bbox,
+                                       agg::trans_affine const& marker_trans,
+                                       markers_symbolizer const& sym,
+                                       Detector & detector,
+                                       double scale_factor,
+                                       bool snap_to_pixels)
+    : buf_(render_buffer),
         pixf_(buf_),
         renb_(pixf_),
         svg_renderer_(svg_renderer),
@@ -85,14 +85,15 @@ struct vector_markers_rasterizer_dispatch
         scale_factor_(scale_factor),
         snap_to_pixels_(snap_to_pixels)
     {
-        pixf_.comp_op(static_cast<agg::comp_op_e>(get<value_integer>(sym_, keys::comp_op)));
+        pixf_.comp_op(get<agg::comp_op_e>(sym_, keys::comp_op));
     }
 
     template <typename T>
     void add_path(T & path)
     {
-        marker_placement_e placement_method = static_cast<>(get<value_integer>(sym_, keys::marker_placement));
+        marker_placement_e placement_method = get<marker_placement_e>(sym_, keys::marker_placement);
         bool ignore_placement = get<bool>(sym_, keys::ignore_placement);
+        double opacity = get<double>(sym,keys::stroke_opacity,feature);
 
         if (placement_method != MARKER_LINE_PLACEMENT ||
             path.type() == mapnik::geometry_type::types::Point)
@@ -437,11 +438,11 @@ void setup_transform_scaling(agg::trans_affine & tr,
     double width = 0;
     double height = 0;
 
-    expression_ptr const& width_expr = sym.get_width();
+    expression_ptr const& width_expr = get<expression_ptr>(sym, keys::width);
     if (width_expr)
         width = boost::apply_visitor(evaluate<feature_impl,value_type>(feature), *width_expr).to_double();
 
-    expression_ptr const& height_expr = sym.get_height();
+    expression_ptr const& height_expr = get<expression_ptr>(sym, keys::height);
     if (height_expr)
         height = boost::apply_visitor(evaluate<feature_impl,value_type>(feature), *height_expr).to_double();
 

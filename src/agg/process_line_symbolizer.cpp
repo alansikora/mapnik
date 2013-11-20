@@ -97,16 +97,16 @@ void agg_renderer<T>::process(line_symbolizer const& sym,
 
     box2d<double> clip_box = clipping_extent();
 
-    bool clip = get<bool>(sym, keys::clip, feature);
-    double width = get<double>(sym, keys::stroke_width, feature);
-    double opacity = get<double>(sym,keys::stroke_opacity,feature);
-    double offset = get<double>(sym, keys::offset, feature);
-    double simplify_tolerance = get<double>(sym, keys::simplify_tolerance, feature);
-    double smooth = get<double>(sym, keys::smooth, feature);
+    bool clip = get<value_bool>(sym, keys::clip, feature);
+    double width = get<value_double>(sym, keys::stroke_width, feature, 1.0);
+    double opacity = get<value_double>(sym,keys::stroke_opacity,feature, 1.0);
+    double offset = get<value_double>(sym, keys::offset, feature, 0.0);
+    double simplify_tolerance = get<value_double>(sym, keys::simplify_tolerance, feature, 0.0);
+    double smooth = get<value_double>(sym, keys::smooth, feature, false);
     line_rasterizer_enum rasterizer_e = get<line_rasterizer_enum>(sym, keys::rasterizer_mode, feature);
     if (clip)
     {
-        double padding = (double)(query_extent_.width()/pixmap_.width());
+        double padding = static_cast<double>(query_extent_.width()/pixmap_.width());
         double half_stroke = 0.5 * width;
         if (half_stroke > 1)
         {
@@ -125,7 +125,7 @@ void agg_renderer<T>::process(line_symbolizer const& sym,
         //draw_geo_extent(inverse,mapnik::color("red"));
     }
 
-    if (0) //rasterizer_e == RASTERIZER_FAST)
+    if (rasterizer_e == RASTERIZER_FAST)
     {
         typedef agg::renderer_outline_aa<renderer_base> renderer_type;
         typedef agg::rasterizer_outline_aa<renderer_type> rasterizer_type;

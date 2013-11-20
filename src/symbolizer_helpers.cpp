@@ -40,7 +40,7 @@
 namespace mapnik {
 
 template <typename FaceManagerT, typename DetectorT>
-text_symbolizer_helper<FaceManagerT, DetectorT>::text_symbolizer_helper(symbolizer_base const& sym,
+text_symbolizer_helper<FaceManagerT, DetectorT>::text_symbolizer_helper(text_symbolizer const& sym,
                            feature_impl const& feature,
                            proj_transform const& prj_trans,
                            unsigned width,
@@ -195,7 +195,7 @@ bool text_symbolizer_helper<FaceManagerT, DetectorT>::next_point_placement()
             return true;
         }
         //No placement for this point. Keep it in points_ for next try.
-        point_itr_++;
+        ++point_itr_;
     }
     return false;
 }
@@ -214,30 +214,27 @@ struct largest_bbox_first
 template <typename FaceManagerT, typename DetectorT>
 void text_symbolizer_helper<FaceManagerT, DetectorT>::initialize_geometries()
 {
-    bool largest_box_only = false;
-    std::size_t num_geom = feature_.num_geometries();
+    bool largest_box_only = false;//get<value_bool>(sym_, keys::largest_box_only);
+    double minimum_path_length = 0; // get<value_double>(sym_, keys::minimum_path_length);
 
-    for (std::size_t i = 0; i < num_geom; ++i)
+    for ( auto const& geom :  feature_.paths())
     {
-        geometry_type const& geom = feature_.get_geometry(i);
-
         // don't bother with empty geometries
         if (geom.size() == 0) continue;
 
         // FIXME
-        //geometry_type::types type = geom.type();
-        //if (type == geometry_type::types::Polygon)
-        //{
-        //    largest_box_only = false;// FIXME sym_.largest_bbox_only();
-        //    if (sym_.get_minimum_path_length() > 0)
-        //    {
-        //       box2d<double> gbox = t_.forward(geom.envelope(), prj_trans_);
-        //       if (gbox.width() < sym_.get_minimum_path_length())
-        //       {
-        //           continue;
-        //       }
-        //   }
-        //}
+        geometry_type::types type = geom.type();
+        if (type == geometry_type::types::Polygon)
+        {
+            if (minimum_path_length > 0)
+            {
+                box2d<double> gbox = t_.forward(geom.envelope(), prj_trans_);
+                if (gbox.width() < minimum_path_length)
+                {
+                    continue;
+                }
+            }
+        }
         // TODO - calculate length here as well
         geometries_to_process_.push_back(const_cast<geometry_type*>(&geom));
     }
@@ -272,13 +269,13 @@ void text_symbolizer_helper<FaceManagerT, DetectorT>::initialize_points()
 
     std::list<geometry_type*>::const_iterator itr = geometries_to_process_.begin();
     std::list<geometry_type*>::const_iterator end = geometries_to_process_.end();
-    for (; itr != end; itr++)
+    for (; itr != end; ++itr)
     {
         geometry_type const& geom = **itr;
         if (how_placed == VERTEX_PLACEMENT)
         {
             geom.rewind(0);
-            for(unsigned i = 0; i < geom.size(); i++)
+            for(unsigned i = 0; i < geom.size(); ++i)
             {
                 geom.vertex(&label_x, &label_y);
                 prj_trans_.backward(label_x, label_y, z);
@@ -368,8 +365,9 @@ bool shield_symbolizer_helper<FaceManagerT, DetectorT>::next()
 template <typename FaceManagerT, typename DetectorT>
 bool shield_symbolizer_helper<FaceManagerT, DetectorT>::next_point_placement()
 {
-    /*
-    position const& shield_pos = sym_.get_shield_displacement();
+    bool unlock_image = get<value_bool>(sym_, keys::unlock_image);
+    double shield_dx = get<value_double>(sym_, keys::shield_dx);
+    double shield_dy = get<value_double>(sym_, keys::shield_dy);
     while (!points_.empty())
     {
         if (point_itr_ == points_.end())
@@ -381,26 +379,26 @@ bool shield_symbolizer_helper<FaceManagerT, DetectorT>::next_point_placement()
             continue; //Reexecute size check
         }
         position const& text_disp = placement_->properties.displacement;
-        double label_x = point_itr_->first + shield_pos.first;
-        double label_y = point_itr_->second + shield_pos.second;
+        double label_x = point_itr_->first + shield_dx;
+        double label_y = point_itr_->second + shield_dy;
 
         finder_->clear_placements();
         finder_->find_point_placement(label_x, label_y, angle_);
         if (finder_->get_results().empty())
         {
             //No placement for this point. Keep it in points_ for next try.
-            point_itr_++;
+            ++point_itr_;
             continue;
         }
         //Found a label placement but not necessarily also a marker placement
         // check to see if image overlaps anything too, there is only ever 1 placement found for points and verticies
-        if (!sym_.get_unlock_image())
+        if (!unlock_image)
         {
             // center image at text center position
             // remove displacement from image label
             placements_type const& p = finder_->get_results();
-            double lx = p[0].center.x - text_disp.first;
-            double ly = p[0].center.y - text_disp.second;
+            double lx = p[0].center.x - shield_dx;
+            double ly = p[0].center.y - shield_dy;
             marker_x_ = lx - 0.5 * marker_w_;
             marker_y_ = ly - 0.5 * marker_h_;
             marker_ext_.re_center(lx, ly);
@@ -422,7 +420,6 @@ bool shield_symbolizer_helper<FaceManagerT, DetectorT>::next_point_placement()
         //No placement found. Try again
         ++point_itr_;
     }
-    */
     return false;
 }
 
@@ -452,7 +449,7 @@ bool shield_symbolizer_helper<FaceManagerT, DetectorT>::next_line_placement()
 template <typename FaceManagerT, typename DetectorT>
 void shield_symbolizer_helper<FaceManagerT, DetectorT>::init_marker()
 {
-    std::string filename = get<std::string>(sym_, keys::filename, feature_);
+    std::string filename = get<std::string>(sym_, keys::file, feature_);
     evaluate_transform(image_transform_, feature_, get<transform_type>(sym_, keys::image_transform));
     marker_.reset();
     if (!filename.empty())
@@ -488,7 +485,8 @@ template <typename FaceManagerT, typename DetectorT>
 pixel_position shield_symbolizer_helper<FaceManagerT, DetectorT>::get_marker_position(text_path const& p)
 {
     position const& pos = placement_->properties.displacement;
-    if (placement_->properties.label_placement == LINE_PLACEMENT) {
+    if (placement_->properties.label_placement == LINE_PLACEMENT)
+    {
         double lx = p.center.x - pos.first;
         double ly = p.center.y - pos.second;
         double px = lx - 0.5*marker_w_;
@@ -497,7 +495,9 @@ pixel_position shield_symbolizer_helper<FaceManagerT, DetectorT>::get_marker_pos
         //label is added to detector by get_line_placement(), but marker isn't
         detector_.insert(marker_ext_);
         return pixel_position(px, py);
-    } else {
+    }
+    else
+    {
         //collision_detector is already updated for point placement in get_point_placement()
         return pixel_position(marker_x_, marker_y_);
     }

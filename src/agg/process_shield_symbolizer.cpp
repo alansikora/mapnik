@@ -38,7 +38,6 @@ void  agg_renderer<T>::process(shield_symbolizer const& sym,
                                mapnik::feature_impl & feature,
                                proj_transform const& prj_trans)
 {
-#if 0
     box2d<double> clip_box = clipping_extent();
     shield_symbolizer_helper<face_manager<freetype_engine>,
         label_collision_detector4> helper(
@@ -48,11 +47,15 @@ void  agg_renderer<T>::process(shield_symbolizer const& sym,
             t_, font_manager_, *detector_,
             clip_box);
 
+    halo_rasterizer_enum halo_rasterizer = get<halo_rasterizer_enum>(sym, keys::halo_rasterizer, feature);
+    composite_mode_e comp_op = get<composite_mode_e>(sym, keys::comp_op, feature);
     text_renderer<T> ren(*current_buffer_,
-                         font_manager_,
-                         sym.get_halo_rasterizer(),
-                         sym.comp_op(),
-                         scale_factor_);
+        font_manager_,
+        halo_rasterizer,
+        comp_op,
+        scale_factor_);
+
+    double opacity = get<double>(sym,keys::opacity,feature, 1.0);
 
     while (helper.next())
     {
@@ -70,14 +73,13 @@ void  agg_renderer<T>::process(shield_symbolizer const& sym,
             render_marker(pos,
                           helper.get_marker(),
                           helper.get_image_transform(),
-                          sym.get_opacity(),
-                          sym.comp_op());
+                          opacity,
+                          comp_op);
 
             ren.prepare_glyphs(placements[ii]);
             ren.render(placements[ii].center);
         }
     }
-#endif
 }
 
 

@@ -108,8 +108,9 @@ void agg_renderer<T>::process(markers_symbolizer const& sym,
                                      rasterizer,
                                      detector_type > dispatch_type;
                 boost::optional<svg_path_ptr> const& stock_vector_marker = (*mark)->get_vector_data();
-                //expression_ptr const& width_expr = get_optional<value_integer>(sym, keys::width, feature);
-                //expression_ptr const& height_expr = get_optional<value_integer>(sym, keys::width, feature);
+
+                expression_ptr const& width_expr = get_optional<value_integer>(sym, keys::width, feature);
+                expression_ptr const& height_expr = get_optional<value_integer>(sym, keys::width, feature);
 
                 // special case for simple ellipse markers
                 // to allow for full control over rx/ry dimensions
@@ -236,7 +237,6 @@ void agg_renderer<T>::process(markers_symbolizer const& sym,
         }
     }
 #endif
-
 }
 
 template void agg_renderer<image_32>::process(markers_symbolizer const&,

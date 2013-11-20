@@ -69,10 +69,10 @@ void agg_renderer<T>::process(polygon_symbolizer const& sym,
                      CoordTransform, proj_transform, agg::trans_affine, conv_types>
         converter(clip_box,*ras_ptr,sym,t_,prj_trans,tr,scale_factor_);
 
-    bool clip = get<bool>(sym, keys::clip, feature);
-    double simplify_tolerance = get<double>(sym, keys::simplify_tolerance, feature);
-    double smooth = get<double>(sym, keys::smooth, feature);
-    double opacity = get<double>(sym,keys::fill_opacity,feature);
+    bool clip = get<value_bool>(sym, keys::clip, feature);
+    double simplify_tolerance = get<double>(sym, keys::simplify_tolerance, feature, 0.0);
+    double smooth = get<value_double>(sym, keys::smooth, feature, 0.0);
+    double opacity = get<value_double>(sym,keys::fill_opacity,feature, 1.0);
 
     if (prj_trans.equal() && clip) converter.set<clip_poly_tag>(); //optional clip (default: true)
     converter.set<transform_tag>(); //always transform

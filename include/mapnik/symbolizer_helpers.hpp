@@ -19,8 +19,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  *****************************************************************************/
-#ifndef SYMBOLIZER_HELPERS_HPP
-#define SYMBOLIZER_HELPERS_HPP
+#ifndef MAPNIK_SYMBOLIZER_HELPERS_HPP
+#define MAPNIK_SYMBOLIZER_HELPERS_HPP
 
 //mapnik
 #include <mapnik/symbolizer.hpp>
@@ -51,13 +51,13 @@ namespace mapnik {
 
 namespace mapnik {
 
-/** Helper object that does all the TextSymbolizer placement finding
- * work except actually rendering the object. */
+// Helper object that does all the TextSymbolizer placement finding
+// work except actually rendering the object.
 template <typename FaceManagerT, typename DetectorT>
 class text_symbolizer_helper
 {
 public:
-    text_symbolizer_helper(symbolizer_base const& sym,
+    text_symbolizer_helper(text_symbolizer const& sym,
                            feature_impl const& feature,
                            proj_transform const& prj_trans,
                            unsigned width,
@@ -84,7 +84,7 @@ protected:
     void initialize_points();
 
     //Input
-    symbolizer_base const& sym_;
+    text_symbolizer const& sym_;
     feature_impl const& feature_;
     proj_transform const& prj_trans_;
     CoordTransform const& t_;
@@ -120,7 +120,7 @@ template <typename FaceManagerT, typename DetectorT>
 class shield_symbolizer_helper: public text_symbolizer_helper<FaceManagerT, DetectorT>
 {
 public:
-    shield_symbolizer_helper(symbolizer_base const& sym,
+    shield_symbolizer_helper(shield_symbolizer const& sym,
                              feature_impl const& feature,
                              proj_transform const& prj_trans,
                              unsigned width,
@@ -160,7 +160,7 @@ protected:
     bool next_point_placement();
     bool next_line_placement();
     void init_marker();
-    symbolizer_base const& sym_;
+    shield_symbolizer const& sym_;
     box2d<double> marker_ext_;
     boost::optional<marker_ptr> marker_;
     agg::trans_affine image_transform_;
@@ -187,4 +187,4 @@ protected:
     using text_symbolizer_helper<FaceManagerT, DetectorT>::finder_;
 };
 } //namespace
-#endif // SYMBOLIZER_HELPERS_HPP
+#endif // MAPNIK_SYMBOLIZER_HELPERS_HPP
