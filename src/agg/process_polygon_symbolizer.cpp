@@ -50,11 +50,11 @@ void agg_renderer<T>::process(polygon_symbolizer const& sym,
 {
 
     ras_ptr->reset();
-    double gamma = get<value_double>(sym, keys::gamma, feature);
+    double gamma = get<value_double>(sym, keys::gamma, feature, 1.0);
     gamma_method_enum gamma_method = get<gamma_method_enum>(sym, keys::gamma_method, feature);
     if (gamma != gamma_ || gamma_method != gamma_method_)
     {
-        //set_gamma_method(sym, ras_ptr, feature); // FIXME
+        set_gamma_method(ras_ptr, gamma, gamma_method);
         gamma_method_ = gamma_method;
         gamma_ = gamma;
     }

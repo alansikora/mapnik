@@ -35,29 +35,28 @@
 
 namespace mapnik {
 
-template <typename T0, typename T1, typename T2>
-void set_gamma_method(T0 const& obj, T1 & ras_ptr, T2 const& feature)
+template <typename T>
+void set_gamma_method(T & ras_ptr, double gamma, gamma_method_enum method)
 {
-
-    switch (get<gamma_method_enum>(obj, keys::gamma_method, feature))
+    switch (method)
     {
     case GAMMA_POWER:
-        ras_ptr->gamma(agg::gamma_power(obj.get_gamma()));
+        ras_ptr->gamma(agg::gamma_power(gamma));
         break;
     case GAMMA_LINEAR:
-        ras_ptr->gamma(agg::gamma_linear(0.0, obj.get_gamma()));
+        ras_ptr->gamma(agg::gamma_linear(0.0, gamma));
         break;
     case GAMMA_NONE:
         ras_ptr->gamma(agg::gamma_none());
         break;
     case GAMMA_THRESHOLD:
-        ras_ptr->gamma(agg::gamma_threshold(obj.get_gamma()));
+        ras_ptr->gamma(agg::gamma_threshold(gamma));
         break;
     case GAMMA_MULTIPLY:
-        ras_ptr->gamma(agg::gamma_multiply(obj.get_gamma()));
+        ras_ptr->gamma(agg::gamma_multiply(gamma));
         break;
     default:
-        ras_ptr->gamma(agg::gamma_power(obj.get_gamma()));
+        ras_ptr->gamma(agg::gamma_power(gamma));
     }
 }
 
