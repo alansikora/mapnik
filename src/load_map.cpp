@@ -289,7 +289,7 @@ void map_parser::parse_map(Map & map, xml_node const& pt, std::string const& bas
                     if (!mapnik::util::string2int(item,n[i]))
                     {
                         throw config_error(std::string("Invalid version string encountered: '")
-                            + *beg + "' in '" + *min_version_string + "'");
+                                           + *beg + "' in '" + *min_version_string + "'");
                     }
                     if (i==2)
                     {
@@ -647,16 +647,16 @@ void map_parser::parse_layer(Map & map, xml_node const& node)
             }
             else
             {
-                    std::string s_err("failed to parse Layer maximum-extent '");
-                    s_err += *maximum_extent + "' for '" + name + "'";
-                    if (strict_)
-                    {
-                        throw config_error(s_err);
-                    }
-                    else
-                    {
-                        MAPNIK_LOG_ERROR(load_map) << "map_parser: " << s_err;
-                    }
+                std::string s_err("failed to parse Layer maximum-extent '");
+                s_err += *maximum_extent + "' for '" + name + "'";
+                if (strict_)
+                {
+                    throw config_error(s_err);
+                }
+                else
+                {
+                    MAPNIK_LOG_ERROR(load_map) << "map_parser: " << s_err;
+                }
             }
         }
 
@@ -701,7 +701,7 @@ void map_parser::parse_layer(Map & map, xml_node const& node)
                     else
                     {
                         MAPNIK_LOG_ERROR(datasource) << "Datasource template '" << *base
-                            << "' not found for layer '" << name << "'";
+                                                     << "' not found for layer '" << name << "'";
                     }
                 }
 
@@ -1703,10 +1703,10 @@ void map_parser::ensure_exists(std::string const& file_path)
     // validate that the filename exists if it is not a dynamic PathExpression
     if (!boost::algorithm::find_first(file_path,"[") && !boost::algorithm::find_first(file_path,"]"))
     {
-       if (!mapnik::util::exists(file_path))
-       {
-           throw mapnik::config_error("file could not be found: '" + file_path + "'");
-       }
+        if (!mapnik::util::exists(file_path))
+        {
+            throw mapnik::config_error("file could not be found: '" + file_path + "'");
+        }
     }
 }
 
