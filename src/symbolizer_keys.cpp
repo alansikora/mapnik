@@ -81,7 +81,11 @@ static const property_meta_type key_meta[MAX_SYMBOLIZER_KEY] =
     { "simplify-tolerance", 0.0, nullptr},
     { "halo-rasterizer", enumeration_wrapper(HALO_RASTERIZER_FULL),
       [](enumeration_wrapper e) { return enumeration<halo_rasterizer_enum,halo_rasterizer_enum_MAX>(halo_rasterizer_enum(e.value)).as_string();}},
-    { "text-placements", false, nullptr}
+    { "text-placements", false, nullptr},
+    { "placement", enumeration_wrapper(MARKER_POINT_PLACEMENT),
+      [](enumeration_wrapper e) { return enumeration<marker_placement_enum,marker_placement_enum_MAX>(marker_placement_enum(e.value)).as_string();}}, // FIXME - rename to "markers-placement-type"
+    { "multi-policy", enumeration_wrapper(MARKER_EACH_MULTI),
+      [](enumeration_wrapper e) { return enumeration<marker_multi_policy_enum,marker_multi_policy_enum_MAX>(marker_multi_policy_enum(e.value)).as_string();}} // FIXME - better naming ^^
 };
 
 property_meta_type const& get_meta(mapnik::keys key)

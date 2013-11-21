@@ -74,6 +74,8 @@ enum keys : std::uint8_t
     simplify_tolerance,
     halo_rasterizer,
     text_placements_,
+    markers_placement_type,
+    markers_multipolicy,
     MAX_SYMBOLIZER_KEY
 };
 
