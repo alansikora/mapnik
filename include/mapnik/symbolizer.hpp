@@ -160,6 +160,25 @@ struct enumeration_result<T,false>
     }
 };
 
+// enum
+template <typename T, bool is_enum = true >
+struct put_impl
+{
+    static void apply(symbolizer_base & sym, keys key, T const& val)
+    {
+        sym.properties.insert(std::make_pair(key, enumeration_wrapper(val)));
+    }
+};
+
+template <typename T>
+struct put_impl<T, false>
+{
+    static void apply(symbolizer_base & sym, keys key, T const& val)
+    {
+        sym.properties.insert(std::make_pair(key, val));
+    }
+};
+
 }
 
 template <typename T>
@@ -255,7 +274,7 @@ struct extract_raw_value : public boost::static_visitor<T1>
 template <typename T>
 void put(symbolizer_base & sym, keys key, T const& val)
 {
-    sym.properties.insert(std::make_pair(key, val));
+    detail::put_impl<T, std::is_enum<T>::value >::apply(sym, key, val);
 }
 
 template <typename T>
