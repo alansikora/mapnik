@@ -1070,12 +1070,11 @@ void map_parser::parse_markers_symbolizer(rule & rule, xml_node const& sym)
 
         parse_stroke(symbol,sym);
 
-        // FIXME
-        //marker_placement_e placement = sym.get_attr<marker_placement_e>("placement",symbol.get_marker_placement());
-        //put(symbol, "placement", placement);
+        marker_placement_e placement = sym.get_attr<marker_placement_e>("placement", MARKER_POINT_PLACEMENT);
+        put(symbol, keys::markers_placement_type, enumeration_wrapper(placement));
 
-        //marker_multi_policy_e mpolicy = sym.get_attr<marker_multi_policy_e>("multi-policy",symbol.get_marker_multi_policy());
-        //put(symbol, "multi-policy", mpolicy);
+        marker_multi_policy_e mpolicy = sym.get_attr<marker_multi_policy_e>("multi-policy",MARKER_EACH_MULTI);
+        put(symbol, keys::markers_multipolicy, enumeration_wrapper(mpolicy));
 
         parse_symbolizer_base(symbol, sym);
         rule.append(std::move(symbol));
