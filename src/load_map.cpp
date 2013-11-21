@@ -865,14 +865,14 @@ void map_parser::parse_symbolizer_base(symbolizer_base &sym, xml_node const &pt)
         optional<composite_mode_e> comp_op = comp_op_from_string(*comp_op_name);
         if (comp_op)
         {
-            put<enumeration_wrapper>(sym, keys::comp_op, enumeration_wrapper(*comp_op));
+            put(sym, keys::comp_op, *comp_op);
         }
         else
         {
             throw config_error("failed to parse comp-op: '" + *comp_op_name + "'");
         }
     }
-    else put<enumeration_wrapper>(sym, keys::comp_op, enumeration_wrapper(src_over));
+    else put(sym, keys::comp_op, src_over);
 
     optional<std::string> geometry_transform_wkt = pt.get_opt_attr<std::string>("geometry-transform");
     if (geometry_transform_wkt)
@@ -907,11 +907,11 @@ void map_parser::parse_symbolizer_base(symbolizer_base &sym, xml_node const &pt)
 
     // simplify value
     optional<double> simplify_tolerance = pt.get_opt_attr<double>("simplify");
-    if (simplify_tolerance) put<double>(sym, keys::simplify_tolerance,*simplify_tolerance);
+    if (simplify_tolerance) put(sym, keys::simplify_tolerance,*simplify_tolerance);
 
     // smooth value
     optional<double> smooth = pt.get_opt_attr<double>("smooth");
-    if (smooth) put<double>(sym, keys::smooth, *smooth);
+    if (smooth) put(sym, keys::smooth, *smooth);
 }
 
 void map_parser::parse_point_symbolizer(rule & rule, xml_node const & sym)
@@ -1070,11 +1070,11 @@ void map_parser::parse_markers_symbolizer(rule & rule, xml_node const& sym)
 
         parse_stroke(symbol,sym);
 
-        marker_placement_e placement = sym.get_attr<marker_placement_e>("placement", MARKER_POINT_PLACEMENT);
-        put(symbol, keys::markers_placement_type, enumeration_wrapper(placement));
+        //marker_placement_e placement = sym.get_attr<marker_placement_e>("placement", MARKER_POINT_PLACEMENT);
+        //put(symbol, keys::markers_placement_type, placement);
 
-        marker_multi_policy_e mpolicy = sym.get_attr<marker_multi_policy_e>("multi-policy",MARKER_EACH_MULTI);
-        put(symbol, keys::markers_multipolicy, enumeration_wrapper(mpolicy));
+        //marker_multi_policy_enum mpolicy = sym.get_attr<marker_multi_policy_enum>("multi-policy",MARKER_EACH_MULTI);
+        //put(symbol, keys::markers_multipolicy, mpolicy);
 
         parse_symbolizer_base(symbol, sym);
         rule.append(std::move(symbol));
@@ -1205,8 +1205,7 @@ void map_parser::parse_text_symbolizer(rule & rule, xml_node const& sym)
         parse_symbolizer_base(text_symbol, sym);
         put<text_placements_ptr>(text_symbol, keys::text_placements_, placement_finder);
         optional<halo_rasterizer_e> halo_rasterizer_ = sym.get_opt_attr<halo_rasterizer_e>("halo-rasterizer");
-        if (halo_rasterizer_) put<enumeration_wrapper>(text_symbol, keys::halo_rasterizer, enumeration_wrapper(*halo_rasterizer_));
-        else put<enumeration_wrapper>(text_symbol, keys::halo_rasterizer, enumeration_wrapper(HALO_RASTERIZER_FULL));
+        if (halo_rasterizer_) put(text_symbol, keys::halo_rasterizer, halo_rasterizer_enum(*halo_rasterizer_));
         rule.append(std::move(text_symbol));
     }
     catch (config_error const& ex)
