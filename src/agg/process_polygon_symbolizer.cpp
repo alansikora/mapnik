@@ -69,7 +69,7 @@ void agg_renderer<T0,T1>::process(polygon_symbolizer const& sym,
                      CoordTransform, proj_transform, agg::trans_affine, conv_types>
         converter(clip_box,*ras_ptr,sym,t_,prj_trans,tr,scale_factor_);
 
-    bool clip = get<value_bool>(sym, keys::clip, feature);
+    bool clip = get<value_bool>(sym, keys::clip, feature, false);
     double simplify_tolerance = get<double>(sym, keys::simplify_tolerance, feature, 0.0);
     double smooth = get<value_double>(sym, keys::smooth, feature, 0.0);
     double opacity = get<value_double>(sym,keys::fill_opacity,feature, 1.0);
@@ -102,7 +102,7 @@ void agg_renderer<T0,T1>::process(polygon_symbolizer const& sym,
     typedef agg::renderer_base<pixfmt_comp_type> renderer_base;
     typedef agg::renderer_scanline_aa_solid<renderer_base> renderer_type;
     pixfmt_comp_type pixf(buf);
-    pixf.comp_op(get<agg::comp_op_e>(sym, keys::comp_op, feature));
+    pixf.comp_op(get<agg::comp_op_e>(sym, keys::comp_op, feature, agg::comp_op_src_over));
     renderer_base renb(pixf);
     renderer_type ren(renb);
     ren.color(agg::rgba8_pre(r, g, b, int(a * opacity)));

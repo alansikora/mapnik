@@ -74,7 +74,7 @@ void agg_renderer<T0,T1>::process(markers_symbolizer const& sym,
     typedef boost::mpl::vector<clip_poly_tag,transform_tag,smooth_tag> conv_types;
 
     std::string filename = get<std::string>(sym, keys::file, feature);
-    bool clip = get<value_bool>(sym, keys::clip, feature);
+    bool clip = get<value_bool>(sym, keys::clip, feature, false);
     double smooth = get<value_double>(sym, keys::smooth, feature, false);
 
     // https://github.com/mapnik/mapnik/issues/1316

@@ -88,7 +88,7 @@ void agg_renderer<T0,T1>::process(line_symbolizer const& sym,
                                simplify_tag, smooth_tag, dash_tag, stroke_tag> conv_types;
 
     pixfmt_comp_type pixf(buf);
-    pixf.comp_op(get<agg::comp_op_e>(sym, keys::comp_op, feature));
+    pixf.comp_op(get<agg::comp_op_e>(sym, keys::comp_op, feature, agg::comp_op_src_over));
     renderer_base renb(pixf);
 
     agg::trans_affine tr;
@@ -97,7 +97,7 @@ void agg_renderer<T0,T1>::process(line_symbolizer const& sym,
 
     box2d<double> clip_box = clipping_extent();
 
-    bool clip = get<value_bool>(sym, keys::clip, feature);
+    bool clip = get<value_bool>(sym, keys::clip, feature, false);
     double width = get<value_double>(sym, keys::stroke_width, feature, 1.0);
     double opacity = get<value_double>(sym,keys::stroke_opacity,feature, 1.0);
     double offset = get<value_double>(sym, keys::offset, feature, 0.0);

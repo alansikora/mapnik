@@ -872,7 +872,6 @@ void map_parser::parse_symbolizer_base(symbolizer_base &sym, xml_node const &pt)
             throw config_error("failed to parse comp-op: '" + *comp_op_name + "'");
         }
     }
-    else put(sym, keys::comp_op, src_over);
 
     optional<std::string> geometry_transform_wkt = pt.get_opt_attr<std::string>("geometry-transform");
     if (geometry_transform_wkt)
@@ -889,7 +888,6 @@ void map_parser::parse_symbolizer_base(symbolizer_base &sym, xml_node const &pt)
 
     optional<boolean> clip = pt.get_opt_attr<boolean>("clip");
     if (clip) put<bool>(sym, keys::clip, *clip);
-    else put<bool>(sym, keys::clip, false);
     // simplify algorithm
     optional<std::string> simplify_algorithm_name = pt.get_opt_attr<std::string>("simplify-algorithm");
     if (simplify_algorithm_name)
