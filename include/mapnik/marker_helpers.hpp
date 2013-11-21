@@ -91,9 +91,10 @@ struct vector_markers_rasterizer_dispatch
     template <typename T>
     void add_path(T & path)
     {
-        marker_placement_e placement_method = get<marker_placement_e>(sym_, keys::marker_placement);
+        marker_placement_e placement_method = get<marker_placement_e>(sym_, keys::markers_placement_type);
         bool ignore_placement = get<bool>(sym_, keys::ignore_placement);
-        double opacity = get<double>(sym,keys::stroke_opacity,feature);
+        bool allow_overlap = get<bool>(sym_, keys::allow_overlap, false);
+        double opacity = get<double>(sym_,keys::stroke_opacity, 1.0);
 
         if (placement_method != MARKER_LINE_PLACEMENT ||
             path.type() == mapnik::geometry_type::types::Point)
@@ -126,10 +127,10 @@ struct vector_markers_rasterizer_dispatch
             // TODO https://github.com/mapnik/mapnik/issues/1754
             box2d<double> transformed_bbox = bbox_ * matrix;
 
-            if (sym_.get_allow_overlap() ||
+            if (allow_overlap ||
                 detector_.has_placement(transformed_bbox))
             {
-                svg_renderer_.render(ras_, sl_, renb_, matrix, sym_.get_opacity(), bbox_);
+                svg_renderer_.render(ras_, sl_, renb_, matrix, opacity, bbox_);
                 if (!ignore_placement)
                 {
                     detector_.insert(transformed_bbox);
@@ -141,7 +142,7 @@ struct vector_markers_rasterizer_dispatch
             markers_placement<T, Detector> placement(path, bbox_, marker_trans_, detector_,
                                                      sym_.get_spacing() * scale_factor_,
                                                      sym_.get_max_error(),
-                                                     sym_.get_allow_overlap());
+                                                     allow_overlap);
             double x = 0;
             double y = 0;
             double angle = 0;
@@ -381,6 +382,7 @@ void build_ellipse(T const& sym, mapnik::feature_impl const& feature, svg_storag
 template <typename Attr>
 bool push_explicit_style(Attr const& src, Attr & dst, markers_symbolizer const& sym)
 {
+/*
     boost::optional<stroke> const& strk = sym.get_stroke();
     boost::optional<color> const& fill = sym.get_fill();
     boost::optional<float> const& fill_opacity = sym.get_fill_opacity();
@@ -425,6 +427,7 @@ bool push_explicit_style(Attr const& src, Attr & dst, markers_symbolizer const& 
         }
         return success;
     }
+*/
     return false;
 }
 
@@ -475,10 +478,10 @@ void apply_markers_multi(feature_impl & feature, Converter& converter, markers_s
   }
   else if (geom_count > 1)
   {
-      marker_multi_policy_e multi_policy = sym.get_marker_multi_policy();
-      marker_placement_e placement = sym.get_marker_placement();
+      marker_multi_policy_e multi_policy = get<marker_multi_policy_e>(sym_, keys::markers_multipolicy);
+      marker_placement_e placement = get<marker_placement_e>(sym_, keys::markers_placement_type);
       if (placement == MARKER_POINT_PLACEMENT &&
-           multi_policy == MARKER_WHOLE_MULTI)
+          multi_policy == MARKER_WHOLE_MULTI)
       {
           double x, y;
           if (label::centroid_geoms(feature.paths().begin(), feature.paths().end(), x, y))
