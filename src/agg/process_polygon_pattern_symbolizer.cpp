@@ -52,8 +52,8 @@
 
 namespace mapnik {
 
-template <typename T>
-void agg_renderer<T>::process(polygon_pattern_symbolizer const& sym,
+template <typename T0, typename T1>
+void agg_renderer<T0,T1>::process(polygon_pattern_symbolizer const& sym,
                               mapnik::feature_impl & feature,
                               proj_transform const& prj_trans)
 {

@@ -33,8 +33,8 @@
 
 namespace mapnik {
 
-template <typename T>
-void  agg_renderer<T>::process(shield_symbolizer const& sym,
+template <typename T0, typename T1>
+void  agg_renderer<T0,T1>::process(shield_symbolizer const& sym,
                                mapnik::feature_impl & feature,
                                proj_transform const& prj_trans)
 {
@@ -49,11 +49,11 @@ void  agg_renderer<T>::process(shield_symbolizer const& sym,
 
     halo_rasterizer_enum halo_rasterizer = get<halo_rasterizer_enum>(sym, keys::halo_rasterizer, feature);
     composite_mode_e comp_op = get<composite_mode_e>(sym, keys::comp_op, feature);
-    text_renderer<T> ren(*current_buffer_,
-        font_manager_,
-        halo_rasterizer,
-        comp_op,
-        scale_factor_);
+    text_renderer<buffer_type> ren(*current_buffer_,
+                                   font_manager_,
+                                   halo_rasterizer,
+                                   comp_op,
+                                   scale_factor_);
 
     double opacity = get<double>(sym,keys::opacity,feature, 1.0);
 

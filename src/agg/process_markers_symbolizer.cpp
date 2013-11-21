@@ -58,8 +58,8 @@
 
 namespace mapnik {
 
-template <typename T>
-void agg_renderer<T>::process(markers_symbolizer const& sym,
+template <typename T0, typename T1>
+void agg_renderer<T0,T1>::process(markers_symbolizer const& sym,
                               feature_impl & feature,
                               proj_transform const& prj_trans)
 {
