@@ -66,7 +66,7 @@ void agg_renderer<T0,T1>::process(line_symbolizer const& sym,
     unsigned a=col.alpha();
 
     double gamma = get<value_double>(sym, keys::gamma, feature, 1.0);
-    gamma_method_enum gamma_method = get<gamma_method_enum>(sym, keys::gamma_method, feature);
+    gamma_method_enum gamma_method = get<gamma_method_enum>(sym, keys::gamma_method, feature, GAMMA_POWER);
     ras_ptr->reset();
 
     if (gamma != gamma_ || gamma_method != gamma_method_)
@@ -103,7 +103,7 @@ void agg_renderer<T0,T1>::process(line_symbolizer const& sym,
     double offset = get<value_double>(sym, keys::offset, feature, 0.0);
     double simplify_tolerance = get<value_double>(sym, keys::simplify_tolerance, feature, 0.0);
     double smooth = get<value_double>(sym, keys::smooth, feature, false);
-    line_rasterizer_enum rasterizer_e = get<line_rasterizer_enum>(sym, keys::rasterizer_mode, feature);
+    line_rasterizer_enum rasterizer_e = get<line_rasterizer_enum>(sym, keys::rasterizer_mode, feature, RASTERIZER_FULL);
     if (clip)
     {
         double padding = static_cast<double>(query_extent_.width()/pixmap_.width());
