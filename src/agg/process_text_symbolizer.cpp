@@ -46,7 +46,7 @@ void agg_renderer<T0,T1>::process(text_symbolizer const& sym,
             clip_box);
 
     halo_rasterizer_enum halo_rasterizer = get<halo_rasterizer_enum>(sym, keys::halo_rasterizer, feature, HALO_RASTERIZER_FULL);
-    composite_mode_e comp_op = get<composite_mode_e>(sym, keys::comp_op, feature);
+    composite_mode_e comp_op = get<composite_mode_e>(sym, keys::comp_op, feature, src_over);
     text_renderer<buffer_type> ren(*current_buffer_,
                                    font_manager_,
                                    halo_rasterizer,
