@@ -59,7 +59,6 @@ enum keys : std::uint8_t
     width,
     height,
     file,
-    filename,
     shield_dx,
     shield_dy,
     unlock_image,
@@ -76,6 +75,7 @@ enum keys : std::uint8_t
     text_placements_,
     markers_placement_type,
     markers_multipolicy,
+    point_placement_type,
     MAX_SYMBOLIZER_KEY
 };
 

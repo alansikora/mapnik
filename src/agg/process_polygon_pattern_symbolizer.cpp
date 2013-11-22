@@ -96,6 +96,7 @@ void agg_renderer<T0,T1>::process(polygon_pattern_symbolizer const& sym,
     if (!pat) return;
 
     bool clip = get<value_bool>(sym, keys::clip, feature, false);
+    double opacity = get<double>(sym,keys::stroke_opacity, 1.0);
     double simplify_tolerance = get<value_double>(sym, keys::simplify_tolerance, feature, 0.0);
     double smooth = get<value_double>(sym, keys::smooth, feature, false);
 

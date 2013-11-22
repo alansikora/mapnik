@@ -123,7 +123,7 @@ struct symbolizer_attributes : public boost::static_visitor<>
 
     void operator () (point_symbolizer const& sym)
     {
-        path_expression_ptr const& filename_expr = get<mapnik::path_expression_ptr>(sym, keys::filename);
+        path_expression_ptr const& filename_expr = get<mapnik::path_expression_ptr>(sym, keys::file);
         if (filename_expr)
         {
             path_processor_type::collect_attributes(*filename_expr,names_);
@@ -139,7 +139,7 @@ struct symbolizer_attributes : public boost::static_visitor<>
 
     void operator () (line_pattern_symbolizer const& sym)
     {
-        path_expression_ptr const& filename_expr = get<mapnik::path_expression_ptr>(sym, keys::filename);
+        path_expression_ptr const& filename_expr = get<mapnik::path_expression_ptr>(sym, keys::file);
         if (filename_expr)
         {
             path_processor_type::collect_attributes(*filename_expr,names_);
@@ -155,7 +155,7 @@ struct symbolizer_attributes : public boost::static_visitor<>
 
     void operator () (polygon_pattern_symbolizer const& sym)
     {
-        path_expression_ptr const& filename_expr = get<mapnik::path_expression_ptr>(sym, keys::filename);
+        path_expression_ptr const& filename_expr = get<mapnik::path_expression_ptr>(sym, keys::file);
         if (filename_expr)
         {
             path_processor_type::collect_attributes(*filename_expr,names_);
@@ -166,7 +166,6 @@ struct symbolizer_attributes : public boost::static_visitor<>
 
     void operator () (shield_symbolizer const& sym)
     {
-        /*
         expression_set::const_iterator it;
         expression_set expressions;
         get<mapnik::text_placements_ptr>(sym, keys::text_placements_)->add_expressions(expressions);
@@ -175,7 +174,7 @@ struct symbolizer_attributes : public boost::static_visitor<>
             if (*it) boost::apply_visitor(f_attr, **it);
         }
 
-        path_expression_ptr const& filename_expr = get<mapnik::path_expression_ptr>(sym, keys::filename);
+        path_expression_ptr const& filename_expr = get<mapnik::path_expression_ptr>(sym, keys::file);
         if (filename_expr)
         {
             path_processor_type::collect_attributes(*filename_expr,names_);
@@ -183,7 +182,6 @@ struct symbolizer_attributes : public boost::static_visitor<>
 
         collect_transform(get<mapnik::transform_type>(sym, keys::transform));
         collect_transform(get<mapnik::transform_type>(sym, keys::image_transform));
-        */
     }
 
     void operator () (markers_symbolizer const& sym)
@@ -198,7 +196,7 @@ struct symbolizer_attributes : public boost::static_visitor<>
         {
             boost::apply_visitor(f_attr,*width_expr);
         }
-        path_expression_ptr const& filename_expr = get<mapnik::path_expression_ptr>(sym, keys::filename);
+        path_expression_ptr const& filename_expr = get<mapnik::path_expression_ptr>(sym, keys::file);
         if (filename_expr)
         {
             path_processor_type::collect_attributes(*filename_expr,names_);

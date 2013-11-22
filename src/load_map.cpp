@@ -954,7 +954,7 @@ void map_parser::parse_point_symbolizer(rule & rule, xml_node const & sym)
             *file = ensure_relative_to_xml(file);
             std::string filename = *file;
             ensure_exists(filename);
-            put(symbol, keys::filename, parse_path(filename, sym.get_tree().path_expr_grammar));
+            put(symbol, keys::file, parse_path(filename, sym.get_tree().path_expr_grammar));
 
             optional<std::string> image_transform_wkt = sym.get_opt_attr<std::string>("transform");
             if (image_transform_wkt)
@@ -1024,7 +1024,7 @@ void map_parser::parse_markers_symbolizer(rule & rule, xml_node const& sym)
         if (!filename.empty())
         {
             ensure_exists(filename);
-            put(symbol,keys::filename, parse_path(filename, sym.get_tree().path_expr_grammar));
+            put(symbol,keys::file, parse_path(filename, sym.get_tree().path_expr_grammar));
         }
 
         // overall opacity to be applied to all paths
@@ -1068,11 +1068,11 @@ void map_parser::parse_markers_symbolizer(rule & rule, xml_node const& sym)
 
         parse_stroke(symbol,sym);
 
-        //marker_placement_e placement = sym.get_attr<marker_placement_e>("placement", MARKER_POINT_PLACEMENT);
-        //put(symbol, keys::markers_placement_type, placement);
+        marker_placement_e placement = sym.get_attr<marker_placement_e>("placement", MARKER_POINT_PLACEMENT);
+        put(symbol, keys::markers_placement_type, marker_placement_enum(placement));
 
-        //marker_multi_policy_enum mpolicy = sym.get_attr<marker_multi_policy_enum>("multi-policy",MARKER_EACH_MULTI);
-        //put(symbol, keys::markers_multipolicy, mpolicy);
+        marker_multi_policy_e mpolicy = sym.get_attr<marker_multi_policy_e>("multi-policy",MARKER_EACH_MULTI);
+        put(symbol, keys::markers_multipolicy, marker_multi_policy_enum(mpolicy));
 
         parse_symbolizer_base(symbol, sym);
         rule.append(std::move(symbol));

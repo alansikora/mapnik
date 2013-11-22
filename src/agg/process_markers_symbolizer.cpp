@@ -29,7 +29,7 @@
 #include <mapnik/feature.hpp>
 #include <mapnik/geom_util.hpp>
 #include <mapnik/vertex_converters.hpp>
-//#include <mapnik/marker_helpers.hpp>
+#include <mapnik/marker_helpers.hpp>
 #include <mapnik/marker.hpp>
 #include <mapnik/marker_cache.hpp>
 #include <mapnik/svg/svg_renderer_agg.hpp>
@@ -63,7 +63,6 @@ void agg_renderer<T0,T1>::process(markers_symbolizer const& sym,
                               feature_impl & feature,
                               proj_transform const& prj_trans)
 {
-#if 0
     typedef agg::rgba8 color_type;
     typedef agg::order_rgba order_type;
     typedef agg::comp_op_adaptor_rgba_pre<color_type, order_type> blender_type; // comp blender
@@ -80,6 +79,7 @@ void agg_renderer<T0,T1>::process(markers_symbolizer const& sym,
     // https://github.com/mapnik/mapnik/issues/1316
     bool snap_pixels = !mapnik::marker_cache::instance().is_uri(filename);
 
+    std::cerr << filename << "-------------------" << std::endl;
     if (!filename.empty())
     {
         boost::optional<marker_ptr> mark = mapnik::marker_cache::instance().find(filename, true);
@@ -112,8 +112,8 @@ void agg_renderer<T0,T1>::process(markers_symbolizer const& sym,
                                      detector_type > dispatch_type;
                 boost::optional<svg_path_ptr> const& stock_vector_marker = (*mark)->get_vector_data();
 
-                expression_ptr const& width_expr = get_optional<expression_ptr>(sym, keys::width);
-                expression_ptr const& height_expr = get_optional<expression_ptr>(sym, keys::width);
+                auto width_expr = get_optional<expression_ptr>(sym, keys::width);
+                auto height_expr = get_optional<expression_ptr>(sym, keys::width);
 
                 // special case for simple ellipse markers
                 // to allow for full control over rx/ry dimensions
@@ -127,7 +127,6 @@ void agg_renderer<T0,T1>::process(markers_symbolizer const& sym,
                     svg_attribute_type attributes;
                     bool result = push_explicit_style( (*stock_vector_marker)->attributes(), attributes, sym);
                     svg_renderer_type svg_renderer(svg_path, result ? attributes : (*stock_vector_marker)->attributes());
-                    //evaluate_transform(tr, feature, sym.get_image_transform());
                     auto image_transform = get_optional<transform_type>(sym, keys::image_transform);
                     if (image_transform) evaluate_transform(tr, feature, *image_transform);
                     box2d<double> bbox = marker_ellipse.bounding_box();
@@ -165,7 +164,6 @@ void agg_renderer<T0,T1>::process(markers_symbolizer const& sym,
                 {
                     box2d<double> const& bbox = (*mark)->bounding_box();
                     setup_transform_scaling(tr, bbox.width(), bbox.height(), feature, sym);
-                    //evaluate_transform(tr, feature, sym.get_image_transform());
                     auto image_transform = get_optional<transform_type>(sym, keys::image_transform);
                     if (image_transform) evaluate_transform(tr, feature, *image_transform);
                     coord2d center = bbox.center();
@@ -207,7 +205,6 @@ void agg_renderer<T0,T1>::process(markers_symbolizer const& sym,
             else // raster markers
             {
                 setup_transform_scaling(tr, (*mark)->width(), (*mark)->height(), feature, sym);
-                //evaluate_transform(tr, feature, sym.get_image_transform());
                 auto image_transform = get_optional<transform_type>(sym, keys::image_transform);
                 if (image_transform) evaluate_transform(tr, feature, *image_transform);
                 box2d<double> const& bbox = (*mark)->bounding_box();
@@ -245,7 +242,6 @@ void agg_renderer<T0,T1>::process(markers_symbolizer const& sym,
             }
         }
     }
-#endif
 }
 
 template void agg_renderer<image_32>::process(markers_symbolizer const&,
