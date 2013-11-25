@@ -1153,8 +1153,8 @@ void map_parser::parse_polygon_pattern_symbolizer(rule & rule,
         put(symbol, keys::file, parse_path(file, sym.get_tree().path_expr_grammar));
 
         // pattern alignment
-        pattern_alignment_e p_alignment = sym.get_attr<pattern_alignment_e>("alignment",LOCAL_ALIGNMENT);
-        put<enumeration_wrapper>(symbol, keys::alignment, enumeration_wrapper(p_alignment));
+        optional<pattern_alignment_e> p_alignment = sym.get_opt_attr<pattern_alignment_e>("alignment");
+        if (p_alignment) put<enumeration_wrapper>(symbol, keys::alignment, enumeration_wrapper(*p_alignment));
 
         // opacity
         optional<float> opacity = sym.get_opt_attr<float>("opacity");
@@ -1166,7 +1166,7 @@ void map_parser::parse_polygon_pattern_symbolizer(rule & rule,
 
         // gamma method
         optional<gamma_method_e> gamma_method = sym.get_opt_attr<gamma_method_e>("gamma-method");
-        if (gamma_method) put<value_integer>(symbol, keys::gamma_method, *gamma_method);
+        if (gamma_method) put<enumeration_wrapper>(symbol, keys::gamma_method, enumeration_wrapper(*gamma_method));
 
         parse_symbolizer_base(symbol, sym);
         rule.append(std::move(symbol));
@@ -1349,7 +1349,7 @@ bool map_parser::parse_stroke(symbolizer_base & symbol, xml_node const & sym)
 
     // stroke-gamma-method
     optional<gamma_method_e> gamma_method = sym.get_opt_attr<gamma_method_e>("stroke-gamma-method");
-    if (gamma_method) put<value_integer>(symbol, keys::stroke_gamma_method, *gamma_method);
+    if (gamma_method) put<enumeration_wrapper>(symbol, keys::stroke_gamma_method, enumeration_wrapper(*gamma_method));
 
     // stroke-dashoffset
     optional<double> dash_offset = sym.get_opt_attr<double>("stroke-dashoffset");
@@ -1406,8 +1406,8 @@ void map_parser::parse_line_symbolizer(rule & rule, xml_node const & sym)
         optional<double> offset = sym.get_opt_attr<double>("offset");
         if (offset) put(symbol, keys::offset, *offset);
 
-        line_rasterizer_e rasterizer = sym.get_attr<line_rasterizer_e>("rasterizer", RASTERIZER_FULL);
-        put<enumeration_wrapper>(symbol, keys::rasterizer_mode, enumeration_wrapper(rasterizer));
+        optional<line_rasterizer_e> rasterizer = sym.get_opt_attr<line_rasterizer_e>("rasterizer");
+        if (rasterizer) put<enumeration_wrapper>(symbol, keys::rasterizer_mode, enumeration_wrapper(*rasterizer));
 
         parse_symbolizer_base(symbol, sym);
         rule.append(std::move(symbol));
@@ -1440,7 +1440,7 @@ void map_parser::parse_polygon_symbolizer(rule & rule, xml_node const & sym)
         if (gamma)  put(poly_sym, keys::gamma, *gamma);
         // gamma method
         optional<gamma_method_e> gamma_method = sym.get_opt_attr<gamma_method_e>("gamma-method");
-        if (gamma_method) put<value_integer>(poly_sym, keys::gamma_method, *gamma_method);
+        if (gamma_method) put<enumeration_wrapper>(poly_sym, keys::gamma_method, enumeration_wrapper(*gamma_method));
 
         parse_symbolizer_base(poly_sym, sym);
         rule.append(std::move(poly_sym));
