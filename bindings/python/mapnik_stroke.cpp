@@ -26,7 +26,6 @@
 #include <boost/python.hpp>
 
 // mapnik
-#include <mapnik/stroke.hpp>
 #include "mapnik_enumeration.hpp"
 
 using namespace mapnik;

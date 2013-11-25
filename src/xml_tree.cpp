@@ -28,7 +28,6 @@
 #include <mapnik/color_factory.hpp>
 #include <mapnik/gamma_method.hpp>
 #include <mapnik/rule.hpp>
-#include <mapnik/stroke.hpp>
 #include <mapnik/feature_type_style.hpp>
 #include <mapnik/text_properties.hpp>
 #include <mapnik/config_error.hpp>

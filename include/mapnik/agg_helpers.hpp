@@ -25,7 +25,7 @@
 
 // mapnik
 #include <mapnik/gamma_method.hpp>
-#include <mapnik/stroke.hpp>            // for line_cap_e, line_join_e, etc
+#include <mapnik/symbolizer.hpp>
 
 
 // agg

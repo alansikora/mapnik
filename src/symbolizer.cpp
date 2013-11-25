@@ -43,6 +43,28 @@ void evaluate_transform(agg::trans_affine& tr, feature_impl const& feature,
 }
 // END FIXME
 
+// stroke
+static const char * line_cap_strings[] = {
+    "butt",
+    "square",
+    "round",
+    ""
+};
+
+
+IMPLEMENT_ENUM( line_cap_e, line_cap_strings )
+
+
+static const char * line_join_strings[] = {
+    "miter",
+    "miter_revert",
+    "round",
+    "bevel",
+    ""
+};
+
+IMPLEMENT_ENUM( line_join_e, line_join_strings )
+
 // point symbolizer
 static const char * point_placement_strings[] = {
     "centroid",

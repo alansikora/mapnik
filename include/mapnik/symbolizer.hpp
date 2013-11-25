@@ -385,7 +385,29 @@ typedef boost::variant<point_symbolizer,
                        debug_symbolizer> symbolizer;
 
 
-// enum
+typedef std::vector<std::pair<double,double> > dash_array;
+
+enum line_cap_enum
+{
+    BUTT_CAP,
+    SQUARE_CAP,
+    ROUND_CAP,
+    line_cap_enum_MAX
+};
+
+DEFINE_ENUM( line_cap_e, line_cap_enum );
+
+enum line_join_enum
+{
+    MITER_JOIN,
+    MITER_REVERT_JOIN,
+    ROUND_JOIN,
+    BEVEL_JOIN,
+    line_join_enum_MAX
+};
+
+DEFINE_ENUM( line_join_e, line_join_enum );
+
 enum line_rasterizer_enum
 {
     RASTERIZER_FULL,           // agg::renderer_scanline_aa_solid

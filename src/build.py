@@ -171,7 +171,6 @@ source = Split(
     scale_denominator.cpp
     simplify.cpp
     memory_datasource.cpp
-    stroke.cpp
     symbolizer.cpp
     symbolizer_helpers.cpp
     symbolizer_keys.cpp
