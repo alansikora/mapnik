@@ -1427,14 +1427,14 @@ void map_parser::parse_polygon_symbolizer(rule & rule, xml_node const & sym)
         polygon_symbolizer poly_sym;
         // fill
         optional<color> fill = sym.get_opt_attr<color>("fill");
+        //optional<expression_ptr> fill = sym.get_opt_attr<expression_ptr>("fill");
         if (fill)
         {
-            put<mapnik::color>(poly_sym, keys::fill, *fill);
+            put(poly_sym, keys::fill, *fill);
         }
         // fill-opacity
-        //optional<double> opacity = sym.get_opt_attr<double>("fill-opacity");
-        //if (opacity) put(poly_sym, "fill-opacity", *opacity);
-        put(poly_sym, keys::fill_opacity, sym.get_attr<double>("fill-opacity", 1.0));
+        optional<double> opacity = sym.get_opt_attr<double>("fill-opacity");
+        if (opacity) put(poly_sym, keys::fill_opacity, *opacity);
         // gamma
         optional<double> gamma = sym.get_opt_attr<double>("gamma");
         if (gamma)  put(poly_sym, keys::gamma, *gamma);
