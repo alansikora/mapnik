@@ -165,8 +165,8 @@ void agg_renderer<T0,T1>::process(line_symbolizer const& sym,
         converter.set<affine_transform_tag>(); // optional affine transform
         if (simplify_tolerance > 0.0) converter.set<simplify_tag>(); // optional simplify converter
         if (smooth > 0.0) converter.set<smooth_tag>(); // optional smooth converter
-//      if (stroke_.has_dash()) converter.set<dash_tag>(); // FIXME
-
+        if (has_key<dash_array>(sym, keys::stroke_dasharray))
+            converter.set<dash_tag>();
         converter.set<stroke_tag>(); //always stroke
 
         for (geometry_type & geom : feature.paths())

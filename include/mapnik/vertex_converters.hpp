@@ -140,19 +140,17 @@ struct converter_traits<T, mapnik::dash_tag>
     template <typename Args>
     static void setup(geometry_type & geom, Args const& args)
     {
-        //typename boost::mpl::at<Args,boost::mpl::int_<2> >::type sym = boost::fusion::at_c<2>(args);
-        //double scale_factor = boost::fusion::at_c<6>(args);
-        // FIXME
-        //stroke const& stroke_ = sym.get_stroke();
-        //dash_array const& d = stroke_.get_dash_array();
-        //dash_array::const_iterator itr = d.begin();
-        //dash_array::const_iterator end = d.end();
-        //for (;itr != end;++itr)
-        //{
-        //    geom.add_dash(itr->first * scale_factor,
-        //                  itr->second * scale_factor);
-        // }
-
+        typename boost::mpl::at<Args,boost::mpl::int_<2> >::type sym = boost::fusion::at_c<2>(args);
+        double scale_factor = boost::fusion::at_c<6>(args);
+        auto dash = get_optional<dash_array>(sym, keys::stroke_dasharray);
+        if (dash)
+        {
+            for (auto const& d : *dash)
+            {
+                geom.add_dash(d.first * scale_factor,
+                              d.second * scale_factor);
+            }
+        }
     }
 };
 
@@ -167,8 +165,8 @@ struct converter_traits<T, mapnik::stroke_tag>
     {
         typename boost::mpl::at<Args,boost::mpl::int_<2> >::type sym = boost::fusion::at_c<2>(args);
         set_join_caps(sym, geom);
-        double miterlimit = get<double>(sym, keys::stroke_miterlimit);
-        double width = get<double>(sym, keys::stroke_width);
+        double miterlimit = get<double>(sym, keys::stroke_miterlimit, 4.0);
+        double width = get<double>(sym, keys::stroke_width, 1.0);
         geom.generator().miter_limit(miterlimit);
         double scale_factor = boost::fusion::at_c<6>(args);
         geom.generator().width(width * scale_factor);
