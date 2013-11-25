@@ -33,10 +33,10 @@
 #include <boost/variant.hpp>
 #include <boost/python/suite/indexing/map_indexing_suite.hpp>
 // mapnik
-#include <mapnik/rule.hpp>
 #include <mapnik/symbolizer.hpp>
 #include <mapnik/symbolizer_hash.hpp>
 #include <mapnik/symbolizer_utils.hpp>
+#include <mapnik/symbolizer_keys.hpp>
 #include <mapnik/image_util.hpp>
 #include <mapnik/parse_path.hpp>
 #include <mapnik/path_expression.hpp>
@@ -49,7 +49,7 @@
 
 
 using mapnik::symbolizer;
-using mapnik::rule;
+using mapnik::symbolizer_base;
 using mapnik::point_symbolizer;
 using mapnik::line_symbolizer;
 using mapnik::line_pattern_symbolizer;
@@ -115,6 +115,34 @@ void set_marker_type(mapnik::markers_symbolizer & symbolizer, std::string const&
 }
 
 */
+
+void __setitem__(mapnik::symbolizer_base & sym, mapnik::keys key, mapnik::symbolizer_base::value_type const& val)
+{
+    put(sym, key , val);
+}
+
+struct extract_python_object : public boost::static_visitor<boost::python::object>
+{
+    typedef boost::python::object result_type;
+
+    template <typename T2>
+    auto operator() (T2 const& val) const -> result_type
+    {
+        return result_type(val); // wrap into python object
+    }
+};
+
+
+boost::python::object __getitem__(mapnik::symbolizer_base const& sym, mapnik::keys key)
+{
+    typedef symbolizer_base::cont_type::const_iterator const_iterator;
+    const_iterator itr = sym.properties.find(key);
+    if (itr != sym.properties.end())
+    {
+        return boost::apply_visitor(extract_python_object(), itr->second);
+    }
+    return boost::python::object();
+}
 
 std::string get_symbolizer_type(symbolizer const& sym)
 {
@@ -203,41 +231,46 @@ void export_symbolizer()
 {
     using namespace boost::python;
 
+    implicitly_convertible<std::string, mapnik::symbolizer_base::value_type>();
+    implicitly_convertible<mapnik::color, mapnik::symbolizer_base::value_type>();
+    implicitly_convertible<mapnik::expression_ptr, mapnik::symbolizer_base::value_type>();
+    implicitly_convertible<mapnik::value_integer, mapnik::symbolizer_base::value_type>();
+    implicitly_convertible<mapnik::value_double, mapnik::symbolizer_base::value_type>();
+    implicitly_convertible<mapnik::value_bool, mapnik::symbolizer_base::value_type>();
+
+    enum_<mapnik::keys>("keys")
+        .value("gamma", mapnik::gamma)
+        .value("gamma_method",mapnik::gamma_method)
+        ;
+
     class_<symbolizer>("Symbolizer",no_init)
-        .def(map_indexing_suite<mapnik::symbolizer_base::cont_type>())
         .def("type",get_symbolizer_type)
-
         .def("__hash__",hash_impl)
-
         .def("point",point_,
              return_value_policy<copy_const_reference>())
-
         .def("line",line_,
              return_value_policy<copy_const_reference>())
-
         .def("line_pattern",line_pattern_,
              return_value_policy<copy_const_reference>())
-
         .def("polygon",polygon_,
              return_value_policy<copy_const_reference>())
-
         .def("polygon_pattern",polygon_pattern_,
              return_value_policy<copy_const_reference>())
-
         .def("raster",raster_,
              return_value_policy<copy_const_reference>())
-
         .def("shield",shield_,
              return_value_policy<copy_const_reference>())
-
         .def("text",text_,
              return_value_policy<copy_const_reference>())
-
         .def("building",building_,
              return_value_policy<copy_const_reference>())
-
         .def("markers",markers_,
              return_value_policy<copy_const_reference>())
+        ;
+
+    class_<symbolizer_base>("SymbolizerBase",no_init)
+        .def("__setitem__",&__setitem__)
+        .def("__getitem__",&__getitem__)
         ;
 }
 
@@ -255,9 +288,8 @@ void export_polygon_symbolizer()
 {
     using namespace boost::python;
 
-    class_<polygon_symbolizer>("PolygonSymbolizer",
-                               init<>("Default ctor"))
-        .def(map_indexing_suite<mapnik::symbolizer_base::cont_type>())
+    class_<polygon_symbolizer, bases<symbolizer_base> >("PolygonSymbolizer",
+                                                        init<>("Default ctor"))
         ;
 
 }
@@ -281,7 +313,7 @@ void export_raster_symbolizer()
 {
     using namespace boost::python;
 
-    class_<raster_symbolizer>("RasterSymbolizer",
+    class_<raster_symbolizer, bases<symbolizer_base> >("RasterSymbolizer",
                               init<>("Default ctor"))
         ;
 }
@@ -295,7 +327,7 @@ void export_point_symbolizer()
         .value("INTERIOR",mapnik::INTERIOR_POINT_PLACEMENT)
         ;
 
-    class_<point_symbolizer>("PointSymbolizer",
+    class_<point_symbolizer, bases<symbolizer_base> >("PointSymbolizer",
                              init<>("Default Point Symbolizer - 4x4 black square"))
         ;
 }
@@ -316,7 +348,7 @@ void export_markers_symbolizer()
         .value("LARGEST",mapnik::MARKER_LARGEST_MULTI)
         ;
 
-    class_<markers_symbolizer>("MarkersSymbolizer",
+    class_<markers_symbolizer, bases<symbolizer_base> >("MarkersSymbolizer",
                                init<>("Default Markers Symbolizer - circle"))
         ;
 }
@@ -330,7 +362,7 @@ void export_line_symbolizer()
         .value("FAST",mapnik::RASTERIZER_FAST)
         ;
 
-    class_<line_symbolizer>("LineSymbolizer",
+    class_<line_symbolizer, bases<symbolizer_base> >("LineSymbolizer",
                             init<>("Default LineSymbolizer - 1px solid black"))
         ;
 }
@@ -339,7 +371,7 @@ void export_line_pattern_symbolizer()
 {
     using namespace boost::python;
 
-    class_<line_pattern_symbolizer>("LinePatternSymbolizer",
+    class_<line_pattern_symbolizer, bases<symbolizer_base> >("LinePatternSymbolizer",
                                     init<> ("Default LinePatternSymbolizer"))
         ;
 }
@@ -353,7 +385,7 @@ void export_debug_symbolizer()
         .value("VERTEX",mapnik::DEBUG_SYM_MODE_VERTEX)
         ;
 
-    class_<mapnik::debug_symbolizer>("DebugSymbolizer",
+    class_<mapnik::debug_symbolizer, bases<symbolizer_base> >("DebugSymbolizer",
                              init<>("Default debug Symbolizer"))
         ;
 }
@@ -362,7 +394,7 @@ void export_building_symbolizer()
 {
     using namespace boost::python;
 
-    class_<building_symbolizer>("BuildingSymbolizer",
+    class_<building_symbolizer, bases<symbolizer_base> >("BuildingSymbolizer",
                                init<>("Default BuildingSymbolizer"))
         ;
 
