@@ -287,6 +287,11 @@ struct extract_raw_value : public boost::static_visitor<T1>
         return val;
     }
 
+    auto operator() (mapnik::enumeration_wrapper const& e) const -> result_type
+    {
+        return detail::enumeration_result<result_type, std::is_enum<result_type>::value>::convert(e);
+    }
+
     template <typename T2>
     auto operator() (T2 const& val) const -> result_type
     {

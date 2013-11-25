@@ -79,7 +79,7 @@ void set_join_caps(Symbolizer const& sym, PathType & stroke, Feature const& feat
         stroke.generator().line_join(agg::bevel_join);
     }
 
-    line_cap_enum cap = get<line_cap_enum>(sym ,"stroke-linecap", feature);
+    line_cap_enum cap = get<line_cap_enum>(sym, keys::stroke_linecap, feature);
 
     switch (cap)
     {
@@ -97,7 +97,7 @@ void set_join_caps(Symbolizer const& sym, PathType & stroke, Feature const& feat
 template <typename Symbolizer,typename PathType>
 void set_join_caps(Symbolizer const& sym, PathType & stroke)
 {
-    line_join_enum join = static_cast<line_join_enum>(get<value_integer>(sym, keys::stroke_linejoin));
+    line_join_enum join = get<line_join_enum>(sym, keys::stroke_linejoin);
     switch (join)
     {
     case MITER_JOIN:
@@ -113,7 +113,7 @@ void set_join_caps(Symbolizer const& sym, PathType & stroke)
         stroke.generator().line_join(agg::bevel_join);
     }
 
-    line_cap_enum cap = static_cast<line_cap_enum>(get<value_integer>(sym ,keys::stroke_linecap));
+    line_cap_enum cap = get<line_cap_enum>(sym, keys::stroke_linecap);
 
     switch (cap)
     {
