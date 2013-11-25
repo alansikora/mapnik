@@ -1356,26 +1356,29 @@ bool map_parser::parse_stroke(symbolizer_base & symbol, xml_node const & sym)
     if (dash_offset) put(symbol,keys::stroke_dashoffset, *dash_offset);
 
     // stroke-dasharray
-#if 0 // FIXME
+
     optional<std::string> str = sym.get_opt_attr<std::string>("stroke-dasharray");
     if (str)
     {
-        std::vector<double> dash_array;
-        if (util::parse_dasharray((*str).begin(),(*str).end(),dash_array))
+        std::vector<double> buf;
+        if (util::parse_dasharray((*str).begin(),(*str).end(),buf))
         {
-            if (!dash_array.empty())
+            if (!buf.empty())
             {
-                size_t size = dash_array.size();
+                size_t size = buf.size();
                 if (size % 2 == 1)
-                    dash_array.insert(dash_array.end(),dash_array.begin(),dash_array.end());
+                    buf.insert(buf.end(),buf.begin(),buf.end());
 
-                std::vector<double>::const_iterator pos = dash_array.begin();
-                while (pos != dash_array.end())
+                dash_array dash;
+                std::vector<double>::const_iterator pos = buf.begin();
+                while (pos != buf.end())
                 {
                     if (*pos > 0.0 || *(pos+1) > 0.0) // avoid both dash and gap eq 0.0
-                        strk.add_dash(*pos,*(pos + 1));
+                        dash.emplace_back(*pos,*(pos + 1));
                     pos +=2;
                 }
+                //
+                put(symbol,keys::stroke_dasharray,dash);
             }
         }
         else
@@ -1385,11 +1388,10 @@ bool map_parser::parse_stroke(symbolizer_base & symbol, xml_node const & sym)
                                "list of floats or 'none' but got '" + (*str) + "'");
         }
     }
-#endif
 
     // stroke-miterlimit
-    optional<double> miterlimit = sym.get_attr<double>("stroke-miterlimit",4.0);
-    put(symbol, keys::stroke_miterlimit, *miterlimit);
+    optional<double> miterlimit = sym.get_opt_attr<double>("stroke-miterlimit");
+    if (miterlimit) put(symbol, keys::stroke_miterlimit, *miterlimit);
     return result;
 }
 
