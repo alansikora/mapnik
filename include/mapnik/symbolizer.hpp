@@ -172,7 +172,15 @@ struct put_impl
 {
     static void apply(symbolizer_base & sym, keys key, T const& val)
     {
-        sym.properties.insert(std::make_pair(key, enumeration_wrapper(val)));
+        auto itr = sym.properties.find(key);
+        if (itr != sym.properties.end())
+        {
+            sym.properties[key] = enumeration_wrapper(val);
+        }
+        else
+        {
+            sym.properties.emplace(key, enumeration_wrapper(val));
+        }
     }
 };
 
@@ -181,7 +189,15 @@ struct put_impl<T, false>
 {
     static void apply(symbolizer_base & sym, keys key, T const& val)
     {
-        sym.properties.insert(std::make_pair(key, val));
+        auto itr = sym.properties.find(key);
+        if (itr != sym.properties.end())
+        {
+            sym.properties[key] = val;
+        }
+        else
+        {
+            sym.properties.emplace(key, val);
+        }
     }
 };
 
