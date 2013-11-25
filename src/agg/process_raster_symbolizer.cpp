@@ -46,18 +46,58 @@
 
 namespace mapnik {
 
+// helper
+double calculate_filter_factor(double filter_factor, scaling_method_e scaling)
+{
+    if (filter_factor > 0)
+    {
+        return filter_factor;
+    }
+    else
+    {
+        double ff = 1.0;
+        switch(scaling)
+        {
+        case SCALING_NEAR:
+            ff = 1.0;
+            break;
+            // TODO potentially some of these algorithms would use filter_factor >2.0.
+            // Contributions welcome from someone who knows more about them.
+        case SCALING_BILINEAR:
+        case SCALING_BILINEAR8:
+        case SCALING_BICUBIC:
+        case SCALING_SPLINE16:
+        case SCALING_SPLINE36:
+        case SCALING_HANNING:
+        case SCALING_HAMMING:
+        case SCALING_HERMITE:
+        case SCALING_KAISER:
+        case SCALING_QUADRIC:
+        case SCALING_CATROM:
+        case SCALING_GAUSSIAN:
+        case SCALING_BESSEL:
+        case SCALING_MITCHELL:
+        case SCALING_SINC:
+        case SCALING_LANCZOS:
+        case SCALING_BLACKMAN:
+            ff = 2.0;
+            break;
+        }
+        return ff;
+    }
+}
+
 
 template <typename T0, typename T1>
 void agg_renderer<T0,T1>::process(raster_symbolizer const& sym,
                               mapnik::feature_impl & feature,
                               proj_transform const& prj_trans)
 {
-#if 0
     raster_ptr const& source = feature.get_raster();
     if (source)
     {
         // If there's a colorizer defined, use it to color the raster in-place
-        raster_colorizer_ptr colorizer = sym.get_colorizer();
+        raster_colorizer_ptr colorizer = get<raster_colorizer_ptr>(sym, keys::colorizer);
         if (colorizer)
             colorizer->colorize(source,feature);
 
@@ -73,10 +113,15 @@ void agg_renderer<T0,T1>::process(raster_symbolizer const& sym,
         if (raster_width > 0 && raster_height > 0)
         {
             raster target(target_ext, raster_width,raster_height);
-            scaling_method_e scaling_method = sym.get_scaling_method();
-            double filter_radius = sym.calculate_filter_factor();
+            double factor = get<double>(sym, keys::filter_factor, feature, 1.0);
+            double opacity = get<double>(sym,keys::opacity,feature, 1.0);
+            double mesh_size = get<double>(sym,keys::mesh_size,feature, 1.0);
+            composite_mode_e comp_op = get<composite_mode_e>(sym, keys::comp_op, feature, src_over);
+            scaling_method_e scaling_method = get<scaling_method_e>(sym, keys::scaling, feature,SCALING_BILINEAR);
+
+            double filter_radius = calculate_filter_factor(factor, scaling_method);
             bool premultiply_source = !source->premultiplied_alpha_;
-            boost::optional<bool> is_premultiplied = sym.premultiplied();
+            auto is_premultiplied = get_optional<bool>(sym, keys::premultiplied);
             if (is_premultiplied)
             {
                 if (*is_premultiplied) premultiply_source = false;
@@ -97,7 +142,7 @@ void agg_renderer<T0,T1>::process(raster_symbolizer const& sym,
                 double offset_y = ext.miny() - start_y;
                 reproject_and_scale_raster(target, *source, prj_trans,
                                  offset_x, offset_y,
-                                 sym.get_mesh_size(),
+                                 mesh_size,
                                  filter_radius,
                                  scaling_method);
             }
@@ -125,11 +170,10 @@ void agg_renderer<T0,T1>::process(raster_symbolizer const& sym,
                 }
             }
             composite(current_buffer_->data(), target.data_,
-                      sym.comp_op(), sym.get_opacity(),
+                      comp_op, opacity,
                       start_x, start_y, false);
         }
     }
-#endif
 }
 
 template void agg_renderer<image_32>::process(raster_symbolizer const&,

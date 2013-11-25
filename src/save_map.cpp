@@ -85,6 +85,38 @@ void serialize_text_placements(ptree & node, text_placements_ptr const& p, bool 
     }
 }
 
+void serialize_raster_colorizer(ptree & sym_node,
+                                raster_colorizer_ptr const& colorizer,
+                                bool explicit_defaults = false)
+{
+    ptree & col_node = sym_node.push_back(
+        ptree::value_type("RasterColorizer", ptree() ))->second;
+    raster_colorizer dfl;
+    if (colorizer->get_default_mode() != dfl.get_default_mode() || explicit_defaults)
+    {
+        set_attr(col_node, "default-mode", colorizer->get_default_mode());
+    }
+    if (colorizer->get_default_color() != dfl.get_default_color() || explicit_defaults)
+    {
+        set_attr(col_node, "default-color", colorizer->get_default_color());
+    }
+    if (colorizer->get_epsilon() != dfl.get_epsilon() || explicit_defaults)
+    {
+        set_attr(col_node, "epsilon", colorizer->get_epsilon());
+    }
+
+    colorizer_stops const &stops = colorizer->get_stops();
+    for (std::size_t i=0; i<stops.size(); ++i)
+    {
+        ptree &stop_node = col_node.push_back( ptree::value_type("stop", ptree()) )->second;
+        set_attr(stop_node, "value", stops[i].get_value());
+        set_attr(stop_node, "color", stops[i].get_color());
+        set_attr(stop_node, "mode", stops[i].get_mode().as_string());
+        if (stops[i].get_label()!=std::string(""))
+            set_attr(stop_node, "label", stops[i].get_label());
+    }
+}
+
 template <typename Meta>
 class serialize_symbolizer_property : public boost::static_visitor<>
 {
@@ -118,6 +150,15 @@ public:
             serialize_text_placements(node_, expr);
         }
     }
+
+    void operator () (raster_colorizer_ptr const& expr) const
+    {
+        if (expr)
+        {
+            serialize_raster_colorizer(node_, expr);
+        }
+    }
+
 
     void operator () (dash_array const& dash) const
     {
@@ -165,37 +206,6 @@ private:
             boost::apply_visitor(serialize_symbolizer_property<property_meta_type>(get_meta(prop.first), sym_node), prop.second);
         }
     }
-
-    void serialize_raster_colorizer(ptree & sym_node,
-                                    raster_colorizer_ptr const& colorizer)
-    {
-        ptree & col_node = sym_node.push_back(
-            ptree::value_type("RasterColorizer", ptree() ))->second;
-        raster_colorizer dfl;
-        if (colorizer->get_default_mode() != dfl.get_default_mode() || explicit_defaults_)
-        {
-            set_attr(col_node, "default-mode", colorizer->get_default_mode());
-        }
-        if (colorizer->get_default_color() != dfl.get_default_color() || explicit_defaults_)
-        {
-            set_attr(col_node, "default-color", colorizer->get_default_color());
-        }
-        if (colorizer->get_epsilon() != dfl.get_epsilon() || explicit_defaults_)
-        {
-            set_attr(col_node, "epsilon", colorizer->get_epsilon());
-        }
-        unsigned i;
-        colorizer_stops const &stops = colorizer->get_stops();
-        for (i=0; i<stops.size(); i++) {
-            ptree &stop_node = col_node.push_back( ptree::value_type("stop", ptree()) )->second;
-            set_attr(stop_node, "value", stops[i].get_value());
-            set_attr(stop_node, "color", stops[i].get_color());
-            set_attr(stop_node, "mode", stops[i].get_mode().as_string());
-            if (stops[i].get_label()!=std::string(""))
-                set_attr(stop_node, "label", stops[i].get_label());
-        }
-    }
-
     ptree & rule_;
     bool explicit_defaults_;
 };

@@ -76,6 +76,7 @@ enum keys : std::uint8_t
     markers_placement_type,
     markers_multipolicy,
     point_placement_type,
+    colorizer,
     MAX_SYMBOLIZER_KEY
 };
 

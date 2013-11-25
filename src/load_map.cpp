@@ -1537,31 +1537,28 @@ void map_parser::parse_raster_symbolizer(rule & rule, xml_node const & sym)
         optional<boolean> premultiplied = sym.get_opt_attr<boolean>("premultiplied");
         if (premultiplied) put<bool>(raster_sym, keys::premultiplied, *premultiplied);
 
-        // FIXME
+        xml_node::const_iterator cssIter = sym.begin();
+        xml_node::const_iterator endCss = sym.end();
 
-        //xml_node::const_iterator cssIter = sym.begin();
-        //xml_node::const_iterator endCss = sym.end();
-
-        //bool found_colorizer = false;
-        //for(; cssIter != endCss; ++cssIter)
-        //{
-        //    if (cssIter->is("RasterColorizer"))
-        //    {
-        //        found_colorizer = true;
-        //        raster_colorizer_ptr colorizer = std::make_shared<raster_colorizer>();
-        //        raster_sym.set_colorizer(colorizer);
-        //        if (parse_raster_colorizer(colorizer, *cssIter))
-        //            raster_sym.set_colorizer(colorizer);
-//
-        //           }
-        //}
-        // look for properties one level up
-        //if (!found_colorizer)
-        //{
-        //   raster_colorizer_ptr colorizer = std::make_shared<raster_colorizer>();
-        //   if (parse_raster_colorizer(colorizer, sym))
-        //       raster_sym.set_colorizer(colorizer);
-        // }
+        bool found_colorizer = false;
+        for(; cssIter != endCss; ++cssIter)
+        {
+            if (cssIter->is("RasterColorizer"))
+            {
+                found_colorizer = true;
+                raster_colorizer_ptr colorizer = std::make_shared<raster_colorizer>();
+                put(raster_sym, keys::colorizer, colorizer);
+                if (parse_raster_colorizer(colorizer, *cssIter))
+                    put(raster_sym, keys::colorizer, colorizer);
+            }
+        }
+        //look for properties one level up
+        if (!found_colorizer)
+        {
+            raster_colorizer_ptr colorizer = std::make_shared<raster_colorizer>();
+            if (parse_raster_colorizer(colorizer, sym))
+                put(raster_sym, keys::colorizer, colorizer);
+        }
         parse_symbolizer_base(raster_sym, sym);
         rule.append(std::move(raster_sym));
     }
