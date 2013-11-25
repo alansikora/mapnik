@@ -119,6 +119,17 @@ public:
         }
     }
 
+    void operator () (dash_array const& dash) const
+    {
+        std::ostringstream os;
+        for (std::size_t i = 0; i < dash.size(); ++i)
+        {
+            os << dash[i].first << ", " << dash[i].second;
+            if ( i + 1 < dash.size() ) os << ",";
+        }
+        node_.put("<xmlattr>." + std::string(std::get<0>(meta_)), os.str());
+    }
+
     template <typename T>
     void operator () ( T const& val ) const
     {
