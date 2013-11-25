@@ -77,6 +77,9 @@ struct enumeration_wrapper
     }
 };
 
+
+typedef std::vector<std::pair<double,double> > dash_array;
+
 struct  MAPNIK_DECL symbolizer_base
 {
     typedef boost::variant<value_bool,
@@ -88,7 +91,8 @@ struct  MAPNIK_DECL symbolizer_base
                            mapnik::expression_ptr,
                            mapnik::path_expression_ptr,
                            mapnik::transform_type,
-                           mapnik::text_placements_ptr> value_type;
+                           mapnik::text_placements_ptr,
+                           dash_array> value_type;
     typedef mapnik::keys key_type;
     typedef std::map<key_type, value_type> cont_type;
     cont_type properties;
@@ -275,6 +279,12 @@ template <typename T>
 void put(symbolizer_base & sym, keys key, T const& val)
 {
     detail::put_impl<T, std::is_enum<T>::value >::apply(sym, key, val);
+}
+
+template <typename T>
+bool has_key(symbolizer_base const& sym, keys key)
+{
+    return (sym.properties.count(key) == 1);
 }
 
 template <typename T>
