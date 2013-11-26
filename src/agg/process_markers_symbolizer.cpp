@@ -111,7 +111,7 @@ void agg_renderer<T0,T1>::process(markers_symbolizer const& sym,
                 boost::optional<svg_path_ptr> const& stock_vector_marker = (*mark)->get_vector_data();
 
                 auto width_expr = get_optional<expression_ptr>(sym, keys::width);
-                auto height_expr = get_optional<expression_ptr>(sym, keys::width);
+                auto height_expr = get_optional<expression_ptr>(sym, keys::height);
 
                 // special case for simple ellipse markers
                 // to allow for full control over rx/ry dimensions
