@@ -91,8 +91,8 @@ struct vector_markers_rasterizer_dispatch
     template <typename T>
     void add_path(T & path)
     {
-        marker_placement_enum placement_method = get<marker_placement_enum>(sym_, keys::markers_placement_type);
-        bool ignore_placement = get<bool>(sym_, keys::ignore_placement);
+        marker_placement_enum placement_method = get<marker_placement_enum>(sym_, keys::markers_placement_type, MARKER_POINT_PLACEMENT);
+        bool ignore_placement = get<bool>(sym_, keys::ignore_placement, false);
         bool allow_overlap = get<bool>(sym_, keys::allow_overlap, false);
         double opacity = get<double>(sym_,keys::stroke_opacity, 1.0);
 
@@ -207,12 +207,10 @@ struct raster_markers_rasterizer_dispatch
     template <typename T>
     void add_path(T & path)
     {
-        marker_placement_enum placement_method = get<marker_placement_enum>(sym_, keys::markers_placement_type);
-        bool allow_overlap = get<bool>(sym_, keys::allow_overlap);
+        marker_placement_enum placement_method = get<marker_placement_enum>(sym_, keys::markers_placement_type, MARKER_POINT_PLACEMENT);
+        bool allow_overlap = get<bool>(sym_, keys::allow_overlap, false);
         box2d<double> bbox_(0,0, src_.width(),src_.height());
-        double opacity = get<double>(sym_, keys::opacity);
-        double spacing  = get<double>(sym_, keys::spacing);
-        double max_error  = get<double>(sym_, keys::max_error);
+        double opacity = get<double>(sym_, keys::opacity, 1.0);
 
         if (placement_method != MARKER_LINE_PLACEMENT ||
             path.type() == mapnik::geometry_type::types::Point)
@@ -250,6 +248,8 @@ struct raster_markers_rasterizer_dispatch
         }
         else
         {
+            double spacing  = get<double>(sym_, keys::spacing, 100.0);
+            double max_error  = get<double>(sym_, keys::max_error, 0.2);
             markers_placement<T, label_collision_detector4> placement(path, bbox_, marker_trans_, detector_,
                                                                       spacing * scale_factor_,
                                                                       max_error,
@@ -488,8 +488,8 @@ void apply_markers_multi(feature_impl & feature, Converter& converter, markers_s
   }
   else if (geom_count > 1)
   {
-      marker_multi_policy_enum multi_policy = get<marker_multi_policy_enum>(sym, keys::markers_multipolicy);
-      marker_placement_enum placement = get<marker_placement_enum>(sym, keys::markers_placement_type);
+      marker_multi_policy_enum multi_policy = get<marker_multi_policy_enum>(sym, keys::markers_multipolicy, MARKER_EACH_MULTI);
+      marker_placement_enum placement = get<marker_placement_enum>(sym, keys::markers_placement_type, MARKER_POINT_PLACEMENT);
       if (placement == MARKER_POINT_PLACEMENT &&
           multi_policy == MARKER_WHOLE_MULTI)
       {

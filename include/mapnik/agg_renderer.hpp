@@ -175,7 +175,7 @@ private:
     std::shared_ptr<detector_type> detector_;
     const std::unique_ptr<rasterizer> ras_ptr;
     box2d<double> query_extent_;
-    gamma_method_e gamma_method_;
+    gamma_method_enum gamma_method_;
     double gamma_;
     void setup(Map const& m);
 };

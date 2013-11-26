@@ -65,8 +65,8 @@ void agg_renderer<T0,T1>::process(line_symbolizer const& sym,
     unsigned b=col.blue();
     unsigned a=col.alpha();
 
-    double gamma = get<value_double>(sym, keys::gamma, feature, 1.0);
-    gamma_method_enum gamma_method = get<gamma_method_enum>(sym, keys::gamma_method, feature, GAMMA_POWER);
+    double gamma = get<value_double>(sym, keys::stroke_gamma, feature, 1.0);
+    gamma_method_enum gamma_method = get<gamma_method_enum>(sym, keys::stroke_gamma_method, feature, GAMMA_POWER);
     ras_ptr->reset();
 
     if (gamma != gamma_ || gamma_method != gamma_method_)
@@ -97,7 +97,7 @@ void agg_renderer<T0,T1>::process(line_symbolizer const& sym,
 
     box2d<double> clip_box = clipping_extent();
 
-    bool clip = get<value_bool>(sym, keys::clip, feature, false);
+    bool clip = get<value_bool>(sym, keys::clip, feature, true);
     double width = get<value_double>(sym, keys::stroke_width, feature, 1.0);
     double opacity = get<value_double>(sym,keys::stroke_opacity,feature, 1.0);
     double offset = get<value_double>(sym, keys::offset, feature, 0.0);

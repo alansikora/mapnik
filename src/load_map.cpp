@@ -1066,11 +1066,11 @@ void map_parser::parse_markers_symbolizer(rule & rule, xml_node const& sym)
 
         parse_stroke(symbol,sym);
 
-        marker_placement_e placement = sym.get_attr<marker_placement_e>("placement", MARKER_POINT_PLACEMENT);
-        if (placement) put(symbol, keys::markers_placement_type, marker_placement_enum(placement));
+        optional<marker_placement_e> placement = sym.get_opt_attr<marker_placement_e>("placement");
+        if (placement) put(symbol, keys::markers_placement_type, marker_placement_enum(*placement));
 
-        marker_multi_policy_e mpolicy = sym.get_attr<marker_multi_policy_e>("multi-policy",MARKER_EACH_MULTI);
-        put(symbol, keys::markers_multipolicy, marker_multi_policy_enum(mpolicy));
+        optional<marker_multi_policy_e> mpolicy = sym.get_opt_attr<marker_multi_policy_e>("multi-policy");
+        if (mpolicy) put(symbol, keys::markers_multipolicy, marker_multi_policy_enum(*mpolicy));
 
         parse_symbolizer_base(symbol, sym);
         rule.append(std::move(symbol));
@@ -1387,7 +1387,7 @@ void map_parser::parse_line_symbolizer(rule & rule, xml_node const & sym)
 {
     try
     {
-        line_symbolizer symbol;// = line_symbolizer(strk);
+        line_symbolizer symbol;
         parse_stroke(symbol, sym);
 
         // offset value
@@ -1425,7 +1425,7 @@ void map_parser::parse_polygon_symbolizer(rule & rule, xml_node const & sym)
         if (opacity) put(poly_sym, keys::fill_opacity, *opacity);
         // gamma
         optional<double> gamma = sym.get_opt_attr<double>("gamma");
-        if (gamma)  put(poly_sym, keys::gamma, *gamma);
+        if (gamma) put(poly_sym, keys::gamma, *gamma);
         // gamma method
         optional<gamma_method_e> gamma_method = sym.get_opt_attr<gamma_method_e>("gamma-method");
         if (gamma_method) put(poly_sym, keys::gamma_method, gamma_method_enum(*gamma_method));
