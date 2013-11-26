@@ -235,7 +235,8 @@ struct evaluate_expression_wrapper<mapnik::enumeration_wrapper>
     template <typename T1, typename T2>
     mapnik::enumeration_wrapper operator() (T1 const& expr, T2 const& feature) const
     {
-        return mapnik::enumeration_wrapper(0);
+        mapnik::value_type val = boost::apply_visitor(mapnik::evaluate<mapnik::feature_impl,mapnik::value_type>(feature), expr);
+        return mapnik::enumeration_wrapper(val.to_int());
     }
 };
 
