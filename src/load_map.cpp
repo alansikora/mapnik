@@ -1376,8 +1376,10 @@ bool map_parser::parse_stroke(symbolizer_base & symbol, xml_node const & sym)
                         dash.emplace_back(*pos,*(pos + 1));
                     pos +=2;
                 }
-                //
-                put(symbol,keys::stroke_dasharray,dash);
+                if (dash.size() > 0)
+                {
+                    put(symbol,keys::stroke_dasharray,dash);
+                }
             }
         }
         else
