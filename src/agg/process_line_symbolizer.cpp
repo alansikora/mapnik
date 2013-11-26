@@ -103,7 +103,7 @@ void agg_renderer<T0,T1>::process(line_symbolizer const& sym,
     double offset = get<value_double>(sym, keys::offset, feature, 0.0);
     double simplify_tolerance = get<value_double>(sym, keys::simplify_tolerance, feature, 0.0);
     double smooth = get<value_double>(sym, keys::smooth, feature, false);
-    line_rasterizer_enum rasterizer_e = get<line_rasterizer_enum>(sym, keys::rasterizer_mode, feature, RASTERIZER_FULL);
+    line_rasterizer_enum rasterizer_e = get<line_rasterizer_enum>(sym, keys::line_rasterizer, feature, RASTERIZER_FULL);
     if (clip)
     {
         double padding = static_cast<double>(query_extent_.width()/pixmap_.width());

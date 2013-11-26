@@ -290,12 +290,15 @@ class _ProcessedText(ProcessedText, _injector):
         #More pythonic name
         self.push_back(properties, text)
 
-# FIXME
-#class _Symbolizers(Symbolizers,_injector):
-#
-#    def __getitem__(self, idx):
-#        sym = Symbolizers._c___getitem__(self, idx)
-#        return sym.symbol()
+class _SymbolizerBase(SymbolizerBase,_injector):
+     # back compatibility
+     @property
+     def filename(self):
+         return self['file']
+
+     @filename.setter
+     def filename(self, val):
+         self['file'] = val
 
 def _add_symbol_method_to_symbolizers(vars=globals()):
 

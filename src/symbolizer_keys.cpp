@@ -25,6 +25,9 @@
 #include <mapnik/gamma_method.hpp>
 #include <mapnik/simplify.hpp>
 
+// boost
+#include "boost/algorithm/string/replace.hpp"  // for replace
+
 namespace mapnik {
 
 // tuple -> name, default value, enumeration to string converter lambda
@@ -54,7 +57,7 @@ static const property_meta_type key_meta[MAX_SYMBOLIZER_KEY] =
     { "stroke-dasharray", false, nullptr},
     { "stroke-miterlimit", 4.0, nullptr},
     { "transform", false, nullptr},
-    { "rasterizer-mode", enumeration_wrapper(RASTERIZER_FULL),
+    { "line-rasterizer", enumeration_wrapper(RASTERIZER_FULL),
       [](enumeration_wrapper e) { return enumeration<line_rasterizer_enum,line_rasterizer_enum_MAX>(line_rasterizer_enum(e.value)).as_string();}},
     { "image-transform", false, nullptr},
     { "spacing", 0.0, nullptr},
@@ -92,6 +95,22 @@ static const property_meta_type key_meta[MAX_SYMBOLIZER_KEY] =
 property_meta_type const& get_meta(mapnik::keys key)
 {
    return key_meta[key];
+}
+
+mapnik::keys get_key(std::string const& name)
+{
+   std::string name_copy(name);
+   boost::algorithm::replace_all(name_copy,"_","-");
+   for (unsigned i=0;i<MAX_SYMBOLIZER_KEY;++i)
+   {
+        property_meta_type const& item = key_meta[i];
+        if (name_copy == std::get<0>(item))
+        {
+            return static_cast<mapnik::keys>(i);
+        }
+   }
+   throw std::runtime_error("no key found for '" + name + "'");
+   return static_cast<mapnik::keys>(0);
 }
 
 }

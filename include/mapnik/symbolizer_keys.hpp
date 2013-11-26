@@ -50,7 +50,7 @@ enum keys : std::uint8_t
     stroke_dasharray,
     stroke_miterlimit,
     transform,
-    rasterizer_mode,
+    line_rasterizer,
     image_transform,
     spacing,
     max_error,

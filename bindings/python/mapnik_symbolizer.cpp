@@ -116,9 +116,9 @@ void set_marker_type(mapnik::markers_symbolizer & symbolizer, std::string const&
 
 */
 
-void __setitem__(mapnik::symbolizer_base & sym, mapnik::keys key, mapnik::symbolizer_base::value_type const& val)
+void __setitem__(mapnik::symbolizer_base & sym, std::string name, mapnik::symbolizer_base::value_type const& val)
 {
-    put(sym, key , val);
+    put(sym, mapnik::get_key(name), val);
 }
 
 struct extract_python_object : public boost::static_visitor<boost::python::object>
@@ -132,15 +132,17 @@ struct extract_python_object : public boost::static_visitor<boost::python::objec
     }
 };
 
-
-boost::python::object __getitem__(mapnik::symbolizer_base const& sym, mapnik::keys key)
+boost::python::object __getitem__(mapnik::symbolizer_base const& sym, std::string const& name)
 {
     typedef symbolizer_base::cont_type::const_iterator const_iterator;
+    mapnik::keys key = mapnik::get_key(name);
     const_iterator itr = sym.properties.find(key);
     if (itr != sym.properties.end())
     {
         return boost::apply_visitor(extract_python_object(), itr->second);
     }
+    //mapnik::property_meta_type const& meta = mapnik::get_meta(key);
+    //return boost::apply_visitor(extract_python_object(), std::get<1>(meta));
     return boost::python::object();
 }
 
@@ -270,7 +272,9 @@ void export_symbolizer()
 
     class_<symbolizer_base>("SymbolizerBase",no_init)
         .def("__setitem__",&__setitem__)
+        .def("__setattr__",&__setitem__)
         .def("__getitem__",&__getitem__)
+        .def("__getattr__",&__getitem__)
         ;
 }
 

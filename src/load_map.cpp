@@ -1406,7 +1406,7 @@ void map_parser::parse_line_symbolizer(rule & rule, xml_node const & sym)
         if (offset) put(symbol, keys::offset, *offset);
 
         optional<line_rasterizer_e> rasterizer = sym.get_opt_attr<line_rasterizer_e>("rasterizer");
-        if (rasterizer) put<enumeration_wrapper>(symbol, keys::rasterizer_mode, enumeration_wrapper(*rasterizer));
+        if (rasterizer) put<enumeration_wrapper>(symbol, keys::line_rasterizer, enumeration_wrapper(*rasterizer));
 
         parse_symbolizer_base(symbol, sym);
         rule.append(std::move(symbol));
