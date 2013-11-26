@@ -22,7 +22,6 @@ int main(int argc, char** argv)
         marker_multi_policy_e policy_in = MARKER_WHOLE_MULTI;
         BOOST_TEST_EQ(policy_in,MARKER_WHOLE_MULTI);
         markers_symbolizer sym;
-        std::clog << sym.properties.count(keys::markers_multipolicy) << "\n";
         put<mapnik::enumeration_wrapper>(sym, keys::markers_multipolicy, enumeration_wrapper(policy_in));
         BOOST_TEST_EQ(sym.properties.count(keys::markers_multipolicy),1);
         marker_multi_policy_e policy_out = get<mapnik::marker_multi_policy_e>(sym, keys::markers_multipolicy);
