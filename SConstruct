@@ -352,15 +352,15 @@ opts.AddVariables(
 
     # Variables affecting rendering back-ends
 
-    BoolVariable('GRID_RENDERER', 'build support for native grid renderer', 'True'),
+    BoolVariable('GRID_RENDERER', 'build support for native grid renderer', 'False'),
     BoolVariable('SVG_RENDERER', 'build support for native svg renderer', 'False'),
     BoolVariable('CPP_TESTS', 'Compile the C++ tests', 'True'),
-    BoolVariable('BENCHMARK', 'Compile the C++ benchmark scripts', 'False'),
+    BoolVariable('BENCHMARK', 'Compile the C++ benchmark scripts', 'True'),
 
     # Variables for optional dependencies
     # Note: cairo and and pycairo are optional but configured automatically through pkg-config
     # Therefore, we use a single boolean for whether to attempt to build cairo support.
-    BoolVariable('CAIRO', 'Attempt to build with Cairo rendering support', 'True'),
+    BoolVariable('CAIRO', 'Attempt to build with Cairo rendering support', 'False'),
     PathVariable('CAIRO_INCLUDES', 'Search path for cairo include files', '',PathVariable.PathAccept),
     PathVariable('CAIRO_LIBS', 'Search path for cairo library files','',PathVariable.PathAccept),
     ('GDAL_CONFIG', 'The path to the gdal-config executable for finding gdal and ogr details.', 'gdal-config'),
