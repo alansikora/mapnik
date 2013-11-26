@@ -894,7 +894,7 @@ void map_parser::parse_symbolizer_base(symbolizer_base &sym, xml_node const &pt)
         optional<simplify_algorithm_e> simplify_algorithm = simplify_algorithm_from_string(*simplify_algorithm_name);
         if (simplify_algorithm)
         {
-            put<enumeration_wrapper>(sym, keys::simplify_algorithm, enumeration_wrapper(*simplify_algorithm));
+            put(sym, keys::simplify_algorithm, *simplify_algorithm);
         }
         else
         {
@@ -934,10 +934,9 @@ void map_parser::parse_point_symbolizer(rule & rule, xml_node const & sym)
         {
             put<bool>(symbol,keys::ignore_placement, *ignore_placement);
         }
-        //FIXME
-        //point_placement_e placement =
-        //    sym.get_attr<point_placement_e>("placement", symbol.get_point_placement());
-        //put<int>(symbol, "placement", *placement);
+
+        boost::optional<point_placement_e> placement = sym.get_opt_attr<point_placement_e>("placement");
+        if (placement) put(symbol, keys::point_placement_type, point_placement_enum(*placement));
 
         if (file && !file->empty())
         {
@@ -1068,7 +1067,7 @@ void map_parser::parse_markers_symbolizer(rule & rule, xml_node const& sym)
         parse_stroke(symbol,sym);
 
         marker_placement_e placement = sym.get_attr<marker_placement_e>("placement", MARKER_POINT_PLACEMENT);
-        put(symbol, keys::markers_placement_type, marker_placement_enum(placement));
+        if (placement) put(symbol, keys::markers_placement_type, marker_placement_enum(placement));
 
         marker_multi_policy_e mpolicy = sym.get_attr<marker_multi_policy_e>("multi-policy",MARKER_EACH_MULTI);
         put(symbol, keys::markers_multipolicy, marker_multi_policy_enum(mpolicy));
@@ -1153,7 +1152,7 @@ void map_parser::parse_polygon_pattern_symbolizer(rule & rule,
 
         // pattern alignment
         optional<pattern_alignment_e> p_alignment = sym.get_opt_attr<pattern_alignment_e>("alignment");
-        if (p_alignment) put<enumeration_wrapper>(symbol, keys::alignment, enumeration_wrapper(*p_alignment));
+        if (p_alignment) put(symbol, keys::alignment, pattern_alignment_enum(*p_alignment));
 
         // opacity
         optional<float> opacity = sym.get_opt_attr<float>("opacity");
@@ -1165,7 +1164,7 @@ void map_parser::parse_polygon_pattern_symbolizer(rule & rule,
 
         // gamma method
         optional<gamma_method_e> gamma_method = sym.get_opt_attr<gamma_method_e>("gamma-method");
-        if (gamma_method) put<enumeration_wrapper>(symbol, keys::gamma_method, enumeration_wrapper(*gamma_method));
+        if (gamma_method) put(symbol, keys::gamma_method, gamma_method_enum(*gamma_method));
 
         parse_symbolizer_base(symbol, sym);
         rule.append(std::move(symbol));
@@ -1326,11 +1325,11 @@ void map_parser::parse_stroke(symbolizer_base & symbol, xml_node const & sym)
 
     // stroke-linejoin
     optional<line_join_e> line_join = sym.get_opt_attr<line_join_e>("stroke-linejoin");
-    if (line_join) put<enumeration_wrapper>(symbol, keys::stroke_linejoin, enumeration_wrapper(*line_join));
+    if (line_join) put(symbol, keys::stroke_linejoin, line_join_enum(*line_join));
 
     // stroke-linecap
     optional<line_cap_e> line_cap = sym.get_opt_attr<line_cap_e>("stroke-linecap");
-    if (line_cap) put<enumeration_wrapper>(symbol, keys::stroke_linecap, enumeration_wrapper(*line_cap));
+    if (line_cap) put(symbol, keys::stroke_linecap,line_cap_enum(*line_cap));
 
     // stroke-gamma
     optional<double> gamma = sym.get_opt_attr<double>("stroke-gamma");
@@ -1338,7 +1337,7 @@ void map_parser::parse_stroke(symbolizer_base & symbol, xml_node const & sym)
 
     // stroke-gamma-method
     optional<gamma_method_e> gamma_method = sym.get_opt_attr<gamma_method_e>("stroke-gamma-method");
-    if (gamma_method) put<enumeration_wrapper>(symbol, keys::stroke_gamma_method, enumeration_wrapper(*gamma_method));
+    if (gamma_method) put(symbol, keys::stroke_gamma_method, gamma_method_enum(*gamma_method));
 
     // stroke-dashoffset
     optional<double> dash_offset = sym.get_opt_attr<double>("stroke-dashoffset");
@@ -1396,7 +1395,7 @@ void map_parser::parse_line_symbolizer(rule & rule, xml_node const & sym)
         if (offset) put(symbol, keys::offset, *offset);
 
         optional<line_rasterizer_e> rasterizer = sym.get_opt_attr<line_rasterizer_e>("rasterizer");
-        if (rasterizer) put<enumeration_wrapper>(symbol, keys::line_rasterizer, enumeration_wrapper(*rasterizer));
+        if (rasterizer) put(symbol, keys::line_rasterizer, line_rasterizer_enum(*rasterizer));
 
         parse_symbolizer_base(symbol, sym);
         rule.append(std::move(symbol));
@@ -1429,7 +1428,7 @@ void map_parser::parse_polygon_symbolizer(rule & rule, xml_node const & sym)
         if (gamma)  put(poly_sym, keys::gamma, *gamma);
         // gamma method
         optional<gamma_method_e> gamma_method = sym.get_opt_attr<gamma_method_e>("gamma-method");
-        if (gamma_method) put<enumeration_wrapper>(poly_sym, keys::gamma_method, enumeration_wrapper(*gamma_method));
+        if (gamma_method) put(poly_sym, keys::gamma_method, gamma_method_enum(*gamma_method));
 
         parse_symbolizer_base(poly_sym, sym);
         rule.append(std::move(poly_sym));
@@ -1564,7 +1563,7 @@ void map_parser::parse_debug_symbolizer(rule & rule, xml_node const & sym)
     parse_symbolizer_base(symbol, sym);
     debug_symbolizer_mode_e mode =
         sym.get_attr<debug_symbolizer_mode_e>("mode", DEBUG_SYM_MODE_COLLISION);
-    put<value_integer>(symbol, keys::mode, mode);
+    put(symbol, keys::mode,debug_symbolizer_mode_enum(mode));
     rule.append(std::move(symbol));
 }
 
