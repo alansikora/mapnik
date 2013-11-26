@@ -85,7 +85,7 @@ struct vector_markers_rasterizer_dispatch
         scale_factor_(scale_factor),
         snap_to_pixels_(snap_to_pixels)
     {
-        pixf_.comp_op(get<agg::comp_op_e>(sym_, keys::comp_op));
+        pixf_.comp_op(get<agg::comp_op_e>(sym_, keys::comp_op, agg::comp_op_src_over));
     }
 
     template <typename T>
@@ -384,11 +384,16 @@ void build_ellipse(T const& sym, mapnik::feature_impl const& feature, svg_storag
 template <typename Attr>
 bool push_explicit_style(Attr const& src, Attr & dst, markers_symbolizer const& sym)
 {
-/*
-    boost::optional<stroke> const& strk = sym.get_stroke();
-    boost::optional<color> const& fill = sym.get_fill();
-    boost::optional<float> const& fill_opacity = sym.get_fill_opacity();
-    if (strk || fill || fill_opacity)
+    auto fill_color = get_optional<color>(sym, keys::fill);
+    auto fill_opacity = get_optional<double>(sym, keys::fill_opacity);
+    auto stroke_color = get_optional<color>(sym, keys::stroke);
+    auto stroke_width = get_optional<double>(sym, keys::stroke_width);
+    auto stroke_opacity = get_optional<double>(sym, keys::stroke_opacity);
+    if (fill_color ||
+        fill_opacity ||
+        stroke_color ||
+        stroke_width ||
+        stroke_opacity)
     {
         bool success = false;
         for(unsigned i = 0; i < src.size(); ++i)
@@ -398,24 +403,28 @@ bool push_explicit_style(Attr const& src, Attr & dst, markers_symbolizer const& 
             mapnik::svg::path_attributes & attr = dst.last();
             if (attr.stroke_flag)
             {
-                // TODO - stroke attributes need to be boost::optional
-                // for this to work properly
-                if (strk)
+                if (stroke_width)
                 {
-                    attr.stroke_width = strk->get_width();
-                    color const& s_color = strk->get_color();
+                    attr.stroke_width = *stroke_width;
+                }
+                if (stroke_color)
+                {
+                    color const& s_color = *stroke_color;
                     attr.stroke_color = agg::rgba(s_color.red()/255.0,
                                                   s_color.green()/255.0,
                                                   s_color.blue()/255.0,
                                                   s_color.alpha()/255.0);
-                    attr.stroke_opacity = strk->get_opacity();
+                }
+                if (stroke_opacity)
+                {
+                    attr.stroke_opacity = *stroke_opacity;
                 }
             }
             if (attr.fill_flag)
             {
-                if (fill)
+                if (fill_color)
                 {
-                    color const& f_color = *fill;
+                    color const& f_color = *fill_color;
                     attr.fill_color = agg::rgba(f_color.red()/255.0,
                                                 f_color.green()/255.0,
                                                 f_color.blue()/255.0,
@@ -429,7 +438,6 @@ bool push_explicit_style(Attr const& src, Attr & dst, markers_symbolizer const& 
         }
         return success;
     }
-*/
     return false;
 }
 
@@ -443,11 +451,11 @@ void setup_transform_scaling(agg::trans_affine & tr,
     double width = 0;
     double height = 0;
 
-    expression_ptr const& width_expr = get<expression_ptr>(sym, keys::width);
+    expression_ptr width_expr = get<expression_ptr>(sym, keys::width);
     if (width_expr)
         width = boost::apply_visitor(evaluate<feature_impl,value_type>(feature), *width_expr).to_double();
 
-    expression_ptr const& height_expr = get<expression_ptr>(sym, keys::height);
+    expression_ptr height_expr = get<expression_ptr>(sym, keys::height);
     if (height_expr)
         height = boost::apply_visitor(evaluate<feature_impl,value_type>(feature), *height_expr).to_double();
 
