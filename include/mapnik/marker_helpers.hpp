@@ -488,7 +488,7 @@ void apply_markers_multi(feature_impl & feature, Converter& converter, markers_s
   }
   else if (geom_count > 1)
   {
-      marker_multi_policy_enum multi_policy = get<marker_multi_policy_enum(sym, keys::markers_multipolicy);
+      marker_multi_policy_enum multi_policy = get<marker_multi_policy_enum>(sym, keys::markers_multipolicy);
       marker_placement_enum placement = get<marker_placement_enum>(sym, keys::markers_placement_type);
       if (placement == MARKER_POINT_PLACEMENT &&
           multi_policy == MARKER_WHOLE_MULTI)

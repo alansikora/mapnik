@@ -1493,14 +1493,14 @@ void map_parser::parse_raster_symbolizer(rule & rule, xml_node const & sym)
             if (scaling_method == "fast")
             {
                 MAPNIK_LOG_ERROR(raster_symbolizer) << "'scaling' value of 'fast' is deprecated and will be removed in Mapnik 3.x, use 'near' with Mapnik >= 2.1.x";
-                put<value_integer>(raster_sym, keys::scaling, SCALING_NEAR);
+                put(raster_sym, keys::scaling, SCALING_NEAR);
             }
             else
             {
                 boost::optional<scaling_method_e> method = scaling_method_from_string(scaling_method);
                 if (method)
                 {
-                    put<value_integer>(raster_sym, keys::scaling, *method);
+                    put(raster_sym, keys::scaling, *method);
                 }
                 else
                 {
