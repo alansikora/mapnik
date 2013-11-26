@@ -66,11 +66,10 @@ MAPNIK_DECL void evaluate_transform(agg::trans_affine& tr,
 struct enumeration_wrapper
 {
     int value;
+    enumeration_wrapper() = delete;
     template <typename T>
     explicit enumeration_wrapper(T value_)
-        : value(value_) {
-            std::clog << "values: " << value_ << " " << value << "\n";
-        }
+        : value(value_) {}
 
     inline operator int() const
     {
@@ -162,7 +161,6 @@ struct enumeration_result<T,false>
     typedef T result_type;
     static result_type convert(enumeration_wrapper const& e)
     {
-        std::clog << "FAIL!!!!\n";
         return result_type();// FAIL
     }
 };
