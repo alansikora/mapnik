@@ -113,12 +113,10 @@ void agg_renderer<T0,T1>::process(raster_symbolizer const& sym,
         if (raster_width > 0 && raster_height > 0)
         {
             raster target(target_ext, raster_width,raster_height);
-            double factor = get<double>(sym, keys::filter_factor, feature, 1.0);
+            double factor = get<double>(sym, keys::filter_factor, feature, 0.0);
             double opacity = get<double>(sym,keys::opacity,feature, 1.0);
-            double mesh_size = get<double>(sym,keys::mesh_size,feature, 1.0);
             composite_mode_e comp_op = get<composite_mode_e>(sym, keys::comp_op, feature, src_over);
             scaling_method_e scaling_method = get<scaling_method_e>(sym, keys::scaling, feature, SCALING_NEAR);
-
             double filter_radius = calculate_filter_factor(factor, scaling_method);
             bool premultiply_source = !source->premultiplied_alpha_;
             auto is_premultiplied = get_optional<bool>(sym, keys::premultiplied);
@@ -140,6 +138,7 @@ void agg_renderer<T0,T1>::process(raster_symbolizer const& sym,
             {
                 double offset_x = ext.minx() - start_x;
                 double offset_y = ext.miny() - start_y;
+                unsigned mesh_size = static_cast<unsigned>(get<value_integer>(sym,keys::mesh_size,feature, 16));
                 reproject_and_scale_raster(target, *source, prj_trans,
                                  offset_x, offset_y,
                                  mesh_size,
@@ -159,6 +158,7 @@ void agg_renderer<T0,T1>::process(raster_symbolizer const& sym,
                 {
                     double image_ratio_x = ext.width() / source->data_.width();
                     double image_ratio_y = ext.height() / source->data_.height();
+
                     scale_image_agg<image_data_32>(target.data_,
                                                    source->data_,
                                                    scaling_method,
