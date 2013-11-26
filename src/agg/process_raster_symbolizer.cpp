@@ -117,7 +117,7 @@ void agg_renderer<T0,T1>::process(raster_symbolizer const& sym,
             double opacity = get<double>(sym,keys::opacity,feature, 1.0);
             double mesh_size = get<double>(sym,keys::mesh_size,feature, 1.0);
             composite_mode_e comp_op = get<composite_mode_e>(sym, keys::comp_op, feature, src_over);
-            scaling_method_e scaling_method = get<scaling_method_e>(sym, keys::scaling, feature,SCALING_BILINEAR);
+            scaling_method_e scaling_method = get<scaling_method_e>(sym, keys::scaling, feature, SCALING_NEAR);
 
             double filter_radius = calculate_filter_factor(factor, scaling_method);
             bool premultiply_source = !source->premultiplied_alpha_;

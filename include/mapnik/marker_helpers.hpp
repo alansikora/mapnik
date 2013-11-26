@@ -139,8 +139,8 @@ struct vector_markers_rasterizer_dispatch
         }
         else
         {
-            double spacing = get<double>(sym_, keys::spacing, 0.0);
-            double max_error = get<double>(sym_, keys::max_error, 0.0);
+            double spacing = get<double>(sym_, keys::spacing, 100.0);
+            double max_error = get<double>(sym_, keys::max_error, 0.2);
             markers_placement<T, Detector> placement(path, bbox_, marker_trans_, detector_,
                                                      spacing * scale_factor_,
                                                      max_error,

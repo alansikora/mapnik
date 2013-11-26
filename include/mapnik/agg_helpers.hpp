@@ -63,7 +63,7 @@ void set_gamma_method(T & ras_ptr, double gamma, gamma_method_enum method)
 template <typename Symbolizer,typename PathType, typename Feature>
 void set_join_caps(Symbolizer const& sym, PathType & stroke, Feature const& feature)
 {
-    line_join_enum join = get<line_join_enum>(sym, keys::stroke_linejoin, feature);
+    line_join_enum join = get<line_join_enum>(sym, keys::stroke_linejoin, feature, MITER_JOIN);
     switch (join)
     {
     case MITER_JOIN:
@@ -79,7 +79,7 @@ void set_join_caps(Symbolizer const& sym, PathType & stroke, Feature const& feat
         stroke.generator().line_join(agg::bevel_join);
     }
 
-    line_cap_enum cap = get<line_cap_enum>(sym, keys::stroke_linecap, feature);
+    line_cap_enum cap = get<line_cap_enum>(sym, keys::stroke_linecap, feature, BUTT_CAP);
 
     switch (cap)
     {
@@ -97,7 +97,7 @@ void set_join_caps(Symbolizer const& sym, PathType & stroke, Feature const& feat
 template <typename Symbolizer,typename PathType>
 void set_join_caps(Symbolizer const& sym, PathType & stroke)
 {
-    line_join_enum join = get<line_join_enum>(sym, keys::stroke_linejoin);
+    line_join_enum join = get<line_join_enum>(sym, keys::stroke_linejoin, MITER_JOIN);
     switch (join)
     {
     case MITER_JOIN:
@@ -113,7 +113,7 @@ void set_join_caps(Symbolizer const& sym, PathType & stroke)
         stroke.generator().line_join(agg::bevel_join);
     }
 
-    line_cap_enum cap = get<line_cap_enum>(sym, keys::stroke_linecap);
+    line_cap_enum cap = get<line_cap_enum>(sym, keys::stroke_linecap, BUTT_CAP);
 
     switch (cap)
     {
@@ -132,7 +132,7 @@ void set_join_caps(Symbolizer const& sym, PathType & stroke)
 template <typename Symbolizer,typename Rasterizer,typename Feature>
 void set_join_caps_aa(Symbolizer const& sym, Rasterizer & ras, Feature & feature)
 {
-    line_join_enum join = get<line_join_enum>(sym, keys::stroke_linejoin, feature);
+    line_join_enum join = get<line_join_enum>(sym, keys::stroke_linejoin, feature, MITER_JOIN);
     switch (join)
     {
     case MITER_JOIN:
@@ -148,7 +148,7 @@ void set_join_caps_aa(Symbolizer const& sym, Rasterizer & ras, Feature & feature
         ras.line_join(agg::outline_no_join);
     }
 
-    line_cap_enum cap = get<line_cap_enum>(sym, keys::stroke_linecap, feature);
+    line_cap_enum cap = get<line_cap_enum>(sym, keys::stroke_linecap, feature, BUTT_CAP);
 
     switch (cap)
     {
