@@ -90,7 +90,7 @@ void agg_renderer<T0,T1>::process(polygon_symbolizer const& sym,
 
     agg::rendering_buffer buf(current_buffer_->raw_data(),current_buffer_->width(),current_buffer_->height(), current_buffer_->width() * 4);
 
-    color const& fill = get<mapnik::color>(sym, keys::fill, feature, mapnik::color("gray"));
+    color const& fill = get<mapnik::color>(sym, keys::fill, feature, mapnik::color(128,128,128)); // gray
     unsigned r=fill.red();
     unsigned g=fill.green();
     unsigned b=fill.blue();

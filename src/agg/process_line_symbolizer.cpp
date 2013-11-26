@@ -59,7 +59,7 @@ void agg_renderer<T0,T1>::process(line_symbolizer const& sym,
                               proj_transform const& prj_trans)
 
 {
-    color const& col = get<color>(sym, keys::stroke, feature, mapnik::color("black"));
+    color const& col = get<color>(sym, keys::stroke, feature, mapnik::color(0,0,0));
     unsigned r=col.red();
     unsigned g=col.green();
     unsigned b=col.blue();
