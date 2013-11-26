@@ -66,8 +66,7 @@ MAPNIK_DECL void evaluate_transform(agg::trans_affine& tr,
 struct enumeration_wrapper
 {
     int value;
-    enumeration_wrapper()
-        : value(0) {}
+    enumeration_wrapper() = delete;
     template <typename T>
     explicit enumeration_wrapper(T value_)
         : value(value_) {}
