@@ -91,7 +91,7 @@ struct vector_markers_rasterizer_dispatch
     template <typename T>
     void add_path(T & path)
     {
-        marker_placement_e placement_method = get<marker_placement_e>(sym_, keys::markers_placement_type);
+        marker_placement_enum placement_method = get<marker_placement_enum>(sym_, keys::markers_placement_type);
         bool ignore_placement = get<bool>(sym_, keys::ignore_placement);
         bool allow_overlap = get<bool>(sym_, keys::allow_overlap, false);
         double opacity = get<double>(sym_,keys::stroke_opacity, 1.0);
@@ -207,7 +207,7 @@ struct raster_markers_rasterizer_dispatch
     template <typename T>
     void add_path(T & path)
     {
-        marker_placement_e placement_method = get<marker_placement_e>(sym_, keys::markers_placement_type);
+        marker_placement_enum placement_method = get<marker_placement_enum>(sym_, keys::markers_placement_type);
         bool allow_overlap = get<bool>(sym_, keys::allow_overlap);
         box2d<double> bbox_(0,0, src_.width(),src_.height());
         double opacity = get<double>(sym_, keys::opacity);
@@ -488,8 +488,8 @@ void apply_markers_multi(feature_impl & feature, Converter& converter, markers_s
   }
   else if (geom_count > 1)
   {
-      marker_multi_policy_e multi_policy = get<marker_multi_policy_e>(sym, keys::markers_multipolicy);
-      marker_placement_e placement = get<marker_placement_e>(sym, keys::markers_placement_type);
+      marker_multi_policy_enum multi_policy = get<marker_multi_policy_enum(sym, keys::markers_multipolicy);
+      marker_placement_enum placement = get<marker_placement_enum>(sym, keys::markers_placement_type);
       if (placement == MARKER_POINT_PLACEMENT &&
           multi_policy == MARKER_WHOLE_MULTI)
       {
