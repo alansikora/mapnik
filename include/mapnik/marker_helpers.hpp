@@ -211,6 +211,7 @@ struct raster_markers_rasterizer_dispatch
         bool allow_overlap = get<bool>(sym_, keys::allow_overlap, false);
         box2d<double> bbox_(0,0, src_.width(),src_.height());
         double opacity = get<double>(sym_, keys::opacity, 1.0);
+        bool ignore_placement = get<bool>(sym_, keys::ignore_placement, false);
 
         if (placement_method != MARKER_LINE_PLACEMENT ||
             path.type() == mapnik::geometry_type::types::Point)

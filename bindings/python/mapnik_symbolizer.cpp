@@ -241,8 +241,8 @@ void export_symbolizer()
     implicitly_convertible<mapnik::value_bool, mapnik::symbolizer_base::value_type>();
 
     enum_<mapnik::keys>("keys")
-        .value("gamma", mapnik::gamma)
-        .value("gamma_method",mapnik::gamma_method)
+        .value("gamma", mapnik::keys::gamma)
+        .value("gamma_method",mapnik::keys::gamma_method)
         ;
 
     class_<symbolizer>("Symbolizer",no_init)

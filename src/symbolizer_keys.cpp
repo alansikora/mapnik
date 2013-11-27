@@ -31,7 +31,7 @@
 namespace mapnik {
 
 // tuple -> name, default value, enumeration to string converter lambda
-static const property_meta_type key_meta[MAX_SYMBOLIZER_KEY] =
+static const property_meta_type key_meta[static_cast<unsigned>(keys::MAX_SYMBOLIZER_KEY)] =
 {
     property_meta_type{ "gamma", 1.0, nullptr},
     property_meta_type{ "gamma-method", static_cast<value_integer>(GAMMA_POWER), nullptr},
@@ -94,14 +94,14 @@ static const property_meta_type key_meta[MAX_SYMBOLIZER_KEY] =
 
 property_meta_type const& get_meta(mapnik::keys key)
 {
-   return key_meta[key];
+    return key_meta[static_cast<int>(key)];
 }
 
 mapnik::keys get_key(std::string const& name)
 {
    std::string name_copy(name);
    boost::algorithm::replace_all(name_copy,"_","-");
-   for (unsigned i=0;i<MAX_SYMBOLIZER_KEY;++i)
+   for (unsigned i=0;i<static_cast<unsigned>(keys::MAX_SYMBOLIZER_KEY);++i)
    {
         property_meta_type const& item = key_meta[i];
         if (name_copy == std::get<0>(item))
