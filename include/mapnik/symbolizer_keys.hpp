@@ -49,7 +49,7 @@ enum keys : std::uint8_t
     stroke_dashoffset,
     stroke_dasharray,
     stroke_miterlimit,
-    transform,
+    geometry_transform,
     line_rasterizer,
     image_transform,
     spacing,

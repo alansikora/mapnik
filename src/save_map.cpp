@@ -40,6 +40,7 @@
 #include <mapnik/image_filter_types.hpp>
 #include <mapnik/parse_path.hpp>
 #include <mapnik/symbolizer_utils.hpp>
+#include <mapnik/transform_processor.hpp>
 
 // boost
 #include <boost/algorithm/string.hpp>
@@ -159,6 +160,21 @@ public:
         }
     }
 
+    void operator () (transform_type const& expr) const
+    {
+        if (expr)
+        {
+            node_.put("<xmlattr>." + std::string(std::get<0>(meta_)), transform_processor_type::to_string(*expr));
+        }
+    }
+
+    void operator () (expression_ptr const& expr) const
+    {
+        if (expr)
+        {
+            node_.put("<xmlattr>." + std::string(std::get<0>(meta_)), mapnik::to_expression_string(*expr));
+        }
+    }
 
     void operator () (dash_array const& dash) const
     {

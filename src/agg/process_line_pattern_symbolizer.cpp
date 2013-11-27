@@ -133,7 +133,7 @@ void  agg_renderer<T0,T1>::process(line_pattern_symbolizer const& sym,
     rasterizer_type ras(ren);
 
     agg::trans_affine tr;
-    auto transform = get_optional<transform_type>(sym, keys::transform);
+    auto transform = get_optional<transform_type>(sym, keys::geometry_transform);
     if (transform) evaluate_transform(tr, feature, *transform);
 
     box2d<double> clip_box = clipping_extent();

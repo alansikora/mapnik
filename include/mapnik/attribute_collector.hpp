@@ -119,7 +119,7 @@ struct symbolizer_attributes : public boost::static_visitor<>
         {
             if (*it) boost::apply_visitor(f_attr, **it);
         }
-        collect_transform(get<mapnik::transform_type>(sym, keys::transform));
+        collect_transform(get<mapnik::transform_type>(sym, keys::geometry_transform));
     }
 
     void operator () (point_symbolizer const& sym)
@@ -129,13 +129,13 @@ struct symbolizer_attributes : public boost::static_visitor<>
         {
             path_processor_type::collect_attributes(*filename_expr,names_);
         }
-        collect_transform(get<mapnik::transform_type>(sym, keys::transform));
+        collect_transform(get<mapnik::transform_type>(sym, keys::geometry_transform));
         collect_transform(get<mapnik::transform_type>(sym, keys::image_transform));
     }
 
     void operator () (line_symbolizer const& sym)
     {
-        collect_transform(get<mapnik::transform_type>(sym, keys::transform));
+        collect_transform(get<mapnik::transform_type>(sym, keys::geometry_transform));
     }
 
     void operator () (line_pattern_symbolizer const& sym)
@@ -145,13 +145,13 @@ struct symbolizer_attributes : public boost::static_visitor<>
         {
             path_processor_type::collect_attributes(*filename_expr,names_);
         }
-        collect_transform(get<mapnik::transform_type>(sym, keys::transform));
+        collect_transform(get<mapnik::transform_type>(sym, keys::geometry_transform));
         collect_transform(get<mapnik::transform_type>(sym, keys::image_transform));
     }
 
     void operator () (polygon_symbolizer const& sym)
     {
-        collect_transform(get<mapnik::transform_type>(sym, keys::transform));
+        collect_transform(get<mapnik::transform_type>(sym, keys::geometry_transform));
     }
 
     void operator () (polygon_pattern_symbolizer const& sym)
@@ -161,7 +161,7 @@ struct symbolizer_attributes : public boost::static_visitor<>
         {
             path_processor_type::collect_attributes(*filename_expr,names_);
         }
-        collect_transform(get<mapnik::transform_type>(sym, keys::transform));
+        collect_transform(get<mapnik::transform_type>(sym, keys::geometry_transform));
         collect_transform(get<mapnik::transform_type>(sym, keys::image_transform));
     }
 
@@ -181,7 +181,7 @@ struct symbolizer_attributes : public boost::static_visitor<>
             path_processor_type::collect_attributes(*filename_expr,names_);
         }
 
-        collect_transform(get<mapnik::transform_type>(sym, keys::transform));
+        collect_transform(get<mapnik::transform_type>(sym, keys::geometry_transform));
         collect_transform(get<mapnik::transform_type>(sym, keys::image_transform));
     }
 
@@ -202,7 +202,7 @@ struct symbolizer_attributes : public boost::static_visitor<>
         {
             path_processor_type::collect_attributes(*filename_expr,names_);
         }
-        collect_transform(get<mapnik::transform_type>(sym, keys::transform));
+        collect_transform(get<mapnik::transform_type>(sym, keys::geometry_transform));
         collect_transform(get<mapnik::transform_type>(sym, keys::image_transform));
     }
 
@@ -213,7 +213,7 @@ struct symbolizer_attributes : public boost::static_visitor<>
         {
             boost::apply_visitor(f_attr,*height_expr);
         }
-        collect_transform(get<mapnik::transform_type>(sym, keys::transform));
+        collect_transform(get<mapnik::transform_type>(sym, keys::geometry_transform));
     }
 
     void operator () (raster_symbolizer const& sym)

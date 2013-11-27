@@ -56,10 +56,10 @@ static const property_meta_type key_meta[MAX_SYMBOLIZER_KEY] =
     property_meta_type{ "stroke-dashoffset", static_cast<value_integer>(0), nullptr},
     property_meta_type{ "stroke-dasharray", false, nullptr},
     property_meta_type{ "stroke-miterlimit", 4.0, nullptr},
-    property_meta_type{ "transform", false, nullptr},
+    property_meta_type{ "geometry-transform", false, nullptr},
     property_meta_type{ "line-rasterizer", enumeration_wrapper(RASTERIZER_FULL),
       [](enumeration_wrapper e) { return enumeration<line_rasterizer_enum,line_rasterizer_enum_MAX>(line_rasterizer_enum(e.value)).as_string();}},
-    property_meta_type{ "image-transform", false, nullptr},
+    property_meta_type{ "transform", false, nullptr},
     property_meta_type{ "spacing", 0.0, nullptr},
     property_meta_type{ "max-error", 0.0, nullptr},
     property_meta_type{ "allow-overlap",false, nullptr},
@@ -87,8 +87,8 @@ static const property_meta_type key_meta[MAX_SYMBOLIZER_KEY] =
       [](enumeration_wrapper e) { return enumeration<marker_placement_enum,marker_placement_enum_MAX>(marker_placement_enum(e.value)).as_string();}}, // FIXME - rename to "markers-placement-type"
     property_meta_type{ "multi-policy", enumeration_wrapper(MARKER_EACH_MULTI),
       [](enumeration_wrapper e) { return enumeration<marker_multi_policy_enum,marker_multi_policy_enum_MAX>(marker_multi_policy_enum(e.value)).as_string();}}, // FIXME - better naming ^^
-    property_meta_type{ "point-placement-type", enumeration_wrapper(MARKER_POINT_PLACEMENT),
-      [](enumeration_wrapper e) { return enumeration<marker_placement_enum,marker_placement_enum_MAX>(marker_placement_enum(e.value)).as_string();}},
+    property_meta_type{ "placement", enumeration_wrapper(CENTROID_POINT_PLACEMENT),
+      [](enumeration_wrapper e) { return enumeration<point_placement_enum,point_placement_enum_MAX>(point_placement_enum(e.value)).as_string();}},
     property_meta_type{ "raster-colorizer", nullptr, nullptr }
 };
 
