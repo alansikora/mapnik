@@ -85,6 +85,8 @@ expression_grammar<Iterator>::expression_grammar(mapnik::transcoder const& tr)
     using qi::double_;
     using qi::hex;
     using qi::omit;
+    using qi::alpha;
+    using qi::alnum;
     using standard_wide::char_;
     using standard_wide::no_case;
 
@@ -177,7 +179,7 @@ expression_grammar<Iterator>::expression_grammar(mapnik::transcoder const& tr)
         ;
 
 #if BOOST_VERSION > 104500
-    ustring %= no_skip[+char_];
+    ustring %= no_skip[alpha >> *alnum];
     quote_char %= char_('\'') | char_('"');
     quoted_ustring %= omit[quote_char[_a = _1]]
         >> *(unesc_char | "\\x" >> hex | (char_ - lit(_a)))
