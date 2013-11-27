@@ -116,7 +116,7 @@ void set_marker_type(mapnik::markers_symbolizer & symbolizer, std::string const&
 
 */
 
-void __setitem__(mapnik::symbolizer_base & sym, std::string name, mapnik::symbolizer_base::value_type const& val)
+void __setitem__(mapnik::symbolizer_base & sym, std::string const& name, mapnik::symbolizer_base::value_type const& val)
 {
     put(sym, mapnik::get_key(name), val);
 }
