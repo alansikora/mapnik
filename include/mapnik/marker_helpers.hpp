@@ -94,7 +94,7 @@ struct vector_markers_rasterizer_dispatch
         marker_placement_enum placement_method = get<marker_placement_enum>(sym_, keys::markers_placement_type, MARKER_POINT_PLACEMENT);
         bool ignore_placement = get<bool>(sym_, keys::ignore_placement, false);
         bool allow_overlap = get<bool>(sym_, keys::allow_overlap, false);
-        double opacity = get<double>(sym_,keys::stroke_opacity, 1.0);
+        double opacity = get<double>(sym_,keys::opacity, 1.0);
 
         if (placement_method != MARKER_LINE_PLACEMENT ||
             path.type() == mapnik::geometry_type::types::Point)
