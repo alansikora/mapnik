@@ -1243,29 +1243,23 @@ void map_parser::parse_shield_symbolizer(rule & rule, xml_node const& sym)
         }
 
         // shield displacement
-        double shield_dx = sym.get_attr("shield-dx", 0.0);
-        double shield_dy = sym.get_attr("shield-dy", 0.0);
-        put(shield_symbol, keys::shield_dx, shield_dx);
-        put(shield_symbol, keys::shield_dy, shield_dy);
+        optional<double> shield_dx = sym.get_opt_attr<double>("shield-dx");
+        if (shield_dx) put(shield_symbol, keys::shield_dx, *shield_dx);
+
+        optional<double> shield_dy = sym.get_opt_attr<double>("shield-dy");
+        if (shield_dy) put(shield_symbol, keys::shield_dy, *shield_dy);
 
         // opacity
         optional<float> opacity = sym.get_opt_attr<float>("opacity");
-        if (opacity)
-        {
-            put<double>(shield_symbol, keys::opacity , *opacity);
-        }
+        if (opacity) put<double>(shield_symbol, keys::opacity , *opacity);
 
         // text-opacity
-        // TODO: Could be problematic because it is named opacity in TextSymbolizer but opacity has a diffrent meaning here.
-        optional<double> text_opacity = sym.get_attr<double>("text-opacity", 1.0);
-        put(shield_symbol, keys::text_opacity, *text_opacity);
+        optional<double> text_opacity = sym.get_opt_attr<double>("text-opacity");
+        if (text_opacity) put(shield_symbol, keys::text_opacity, *text_opacity);
+
         // unlock_image
-        optional<boolean> unlock_image =
-            sym.get_opt_attr<boolean>("unlock-image");
-        if (unlock_image)
-        {
-            put<bool>(shield_symbol, keys::unlock_image, * unlock_image);
-        }
+        optional<boolean> unlock_image = sym.get_opt_attr<boolean>("unlock-image");
+        if (unlock_image) put<bool>(shield_symbol, keys::unlock_image, *unlock_image);
 
         std::string file = sym.get_attr<std::string>("file");
         if (file.empty())
@@ -1274,7 +1268,6 @@ void map_parser::parse_shield_symbolizer(rule & rule, xml_node const& sym)
         }
 
         optional<std::string> base = sym.get_opt_attr<std::string>("base");
-
         if(base)
         {
             std::map<std::string,std::string>::const_iterator itr = file_sources_.find(*base);
@@ -1286,8 +1279,7 @@ void map_parser::parse_shield_symbolizer(rule & rule, xml_node const& sym)
 
         // no_text - removed property in 2.1.x that used to have a purpose
         // before you could provide an expression with an empty string
-        optional<boolean> no_text =
-            sym.get_opt_attr<boolean>("no-text");
+        optional<boolean> no_text = sym.get_opt_attr<boolean>("no-text");
         if (no_text)
         {
             MAPNIK_LOG_ERROR(shield_symbolizer) << "'no-text' is deprecated and will be removed in Mapnik 3.x, to create a ShieldSymbolizer without text just provide an element like: \"<ShieldSymbolizer ... />' '</>\"";

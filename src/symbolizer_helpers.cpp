@@ -365,9 +365,9 @@ bool shield_symbolizer_helper<FaceManagerT, DetectorT>::next()
 template <typename FaceManagerT, typename DetectorT>
 bool shield_symbolizer_helper<FaceManagerT, DetectorT>::next_point_placement()
 {
-    bool unlock_image = get<value_bool>(sym_, keys::unlock_image);
-    double shield_dx = get<value_double>(sym_, keys::shield_dx);
-    double shield_dy = get<value_double>(sym_, keys::shield_dy);
+    bool unlock_image = get<value_bool>(sym_, keys::unlock_image, false);
+    double shield_dx = get<value_double>(sym_, keys::shield_dx, 0.0);
+    double shield_dy = get<value_double>(sym_, keys::shield_dy, 0.0);
     while (!points_.empty())
     {
         if (point_itr_ == points_.end())
@@ -397,8 +397,8 @@ bool shield_symbolizer_helper<FaceManagerT, DetectorT>::next_point_placement()
             // center image at text center position
             // remove displacement from image label
             placements_type const& p = finder_->get_results();
-            double lx = p[0].center.x - shield_dx;
-            double ly = p[0].center.y - shield_dy;
+            double lx = p[0].center.x - text_disp.first;
+            double ly = p[0].center.y - text_disp.second;
             marker_x_ = lx - 0.5 * marker_w_;
             marker_y_ = ly - 0.5 * marker_h_;
             marker_ext_.re_center(lx, ly);
@@ -435,7 +435,7 @@ bool shield_symbolizer_helper<FaceManagerT, DetectorT>::next_line_placement()
                       -0.5 * marker_ext_.height() - pos.second,
                       0.5 * marker_ext_.width()  - pos.first,
                       0.5 * marker_ext_.height() - pos.second));
-    if ( get<bool>(sym_, keys::clip, feature_))
+    if (get<bool>(sym_, keys::clip, true))
     {
         return text_symbolizer_helper<FaceManagerT, DetectorT>::next_line_placement_clipped();
     }
@@ -450,7 +450,8 @@ template <typename FaceManagerT, typename DetectorT>
 void shield_symbolizer_helper<FaceManagerT, DetectorT>::init_marker()
 {
     std::string filename = get<std::string>(sym_, keys::file, feature_);
-    evaluate_transform(image_transform_, feature_, get<transform_type>(sym_, keys::image_transform));
+    auto image_transform = get_optional<transform_type>(sym_, keys::image_transform);
+    if (image_transform) evaluate_transform(image_transform_, feature_, *image_transform);
     marker_.reset();
     if (!filename.empty())
     {
