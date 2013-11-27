@@ -35,6 +35,7 @@
 #include <mapnik/parse_path.hpp>  // for path_processor_type
 #include <mapnik/path_expression.hpp>  // for path_expression_ptr
 #include <mapnik/text_placements/base.hpp>  // for text_placements
+#include <mapnik/image_scaling.hpp>
 
 // boost
 #include <boost/variant/static_visitor.hpp>
@@ -217,7 +218,19 @@ struct symbolizer_attributes : public boost::static_visitor<>
 
     void operator () (raster_symbolizer const& sym)
     {
-        filter_factor_ = 1.0;// FIXME sym.calculate_filter_factor();
+        boost::optional<double> filter_factor = get_optional<double>(sym, keys::filter_factor);
+        if (filter_factor)
+        {
+            filter_factor_ = *filter_factor;
+        }
+        else
+        {
+            boost::optional<scaling_method_e> scaling_method = get_optional<scaling_method_e>(sym, keys::scaling);
+            if (scaling_method && *scaling_method != SCALING_NEAR)
+            {
+                filter_factor_ = 2;
+            }
+        }
     }
 
 private:
