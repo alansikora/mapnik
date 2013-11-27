@@ -56,7 +56,7 @@ namespace mapnik
 
 
 freetype_engine::freetype_engine() :
-    library_(NULL)
+    library_(nullptr)
 
 {
     FT_Error error = FT_Init_FreeType( &library_ );
