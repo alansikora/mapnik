@@ -879,11 +879,11 @@ void map_parser::parse_symbolizer_base(symbolizer_base &sym, xml_node const &pt)
             ss += *geometry_transform_wkt + "', expected transform attribute";
             throw config_error(ss);
         }
-        put<mapnik::transform_type>(sym, keys::geometry_transform, tl);
+        put(sym, keys::geometry_transform, tl);
     }
 
     optional<boolean> clip = pt.get_opt_attr<boolean>("clip");
-    if (clip) put<bool>(sym, keys::clip, *clip);
+    if (clip) put(sym, keys::clip, *clip);
     // simplify algorithm
     optional<std::string> simplify_algorithm_name = pt.get_opt_attr<std::string>("simplify-algorithm");
     if (simplify_algorithm_name)
@@ -1028,7 +1028,7 @@ void map_parser::parse_markers_symbolizer(rule & rule, xml_node const& sym)
             {
                 throw mapnik::config_error("Failed to parse transform: '" + *image_transform_wkt + "'");
             }
-            put<transform_type>(symbol, keys::image_transform, tl);
+            put(symbol, keys::image_transform, tl);
         }
 
         optional<color> c = sym.get_opt_attr<color>("fill");
@@ -1041,10 +1041,10 @@ void map_parser::parse_markers_symbolizer(rule & rule, xml_node const& sym)
         if (max_error) put(symbol,keys::max_error, *max_error);
 
         optional<boolean> allow_overlap = sym.get_opt_attr<boolean>("allow-overlap");
-        if (allow_overlap) put<bool>(symbol, keys::allow_overlap, *allow_overlap);
+        if (allow_overlap) put(symbol, keys::allow_overlap, *allow_overlap);
 
         optional<boolean> ignore_placement = sym.get_opt_attr<boolean>("ignore-placement");
-        if (ignore_placement) put<bool>(symbol, keys::ignore_placement, *ignore_placement);
+        if (ignore_placement) put(symbol, keys::ignore_placement, *ignore_placement);
 
         optional<expression_ptr> width = sym.get_opt_attr<expression_ptr>("width");
         if (width) put(symbol, keys::width, *width );
@@ -1247,7 +1247,7 @@ void map_parser::parse_shield_symbolizer(rule & rule, xml_node const& sym)
 
         // unlock_image
         optional<boolean> unlock_image = sym.get_opt_attr<boolean>("unlock-image");
-        if (unlock_image) put<bool>(shield_symbol, keys::unlock_image, *unlock_image);
+        if (unlock_image) put(shield_symbol, keys::unlock_image, *unlock_image);
 
         std::string file = sym.get_attr<std::string>("file");
         if (file.empty())
@@ -1503,7 +1503,7 @@ void map_parser::parse_raster_symbolizer(rule & rule, xml_node const & sym)
 
         // premultiplied status of image
         optional<boolean> premultiplied = sym.get_opt_attr<boolean>("premultiplied");
-        if (premultiplied) put<bool>(raster_sym, keys::premultiplied, *premultiplied);
+        if (premultiplied) put(raster_sym, keys::premultiplied, *premultiplied);
 
         xml_node::const_iterator cssIter = sym.begin();
         xml_node::const_iterator endCss = sym.end();
@@ -1541,9 +1541,8 @@ void map_parser::parse_debug_symbolizer(rule & rule, xml_node const & sym)
 {
     debug_symbolizer symbol;
     parse_symbolizer_base(symbol, sym);
-    debug_symbolizer_mode_e mode =
-        sym.get_attr<debug_symbolizer_mode_e>("mode", DEBUG_SYM_MODE_COLLISION);
-    put(symbol, keys::mode,debug_symbolizer_mode_enum(mode));
+    optional<debug_symbolizer_mode_e> mode = sym.get_opt_attr<debug_symbolizer_mode_e>("mode");
+    if (mode) put(symbol, keys::mode, debug_symbolizer_mode_enum(*mode));
     rule.append(std::move(symbol));
 }
 

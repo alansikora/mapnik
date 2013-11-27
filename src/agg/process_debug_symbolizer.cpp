@@ -53,7 +53,7 @@ void agg_renderer<T0,T1>::process(debug_symbolizer const& sym,
                               proj_transform const& prj_trans)
 {
 
-    debug_symbolizer_mode_e mode = get<debug_symbolizer_mode_e>(sym, keys::mode, DEBUG_SYM_MODE_COLLISION);
+    debug_symbolizer_mode_enum mode = get<debug_symbolizer_mode_enum>(sym, keys::mode, DEBUG_SYM_MODE_COLLISION);
 
     if (mode == DEBUG_SYM_MODE_COLLISION)
     {
