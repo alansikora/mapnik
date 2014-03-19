@@ -143,6 +143,7 @@ else: # unix, non-macos
 
 source = Split(
     """
+    offset.cpp
     fs.cpp
     debug_symbolizer.cpp
     request.cpp
