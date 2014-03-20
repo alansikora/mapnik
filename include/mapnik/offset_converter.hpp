@@ -120,12 +120,7 @@ private:
     /**
      *  @brief  (vx, vy) := (ux, uy) + rotated (0, -offset)
      */
-    void displace(vertex2d & v, vertex2d const& u, double a) const
-    {
-        v.x = u.x + offset_ * std::sin(a);
-        v.y = u.y - offset_ * std::cos(a);
-        v.cmd = u.cmd;
-    }
+    void displace(vertex2d & v, vertex2d const& u, double a) const;
 
     void displace2(vertex2d & v, double a, double b) const
     {
@@ -146,14 +141,7 @@ private:
         return output_vertex(px, py);
     }
 
-    void push_vertex(vertex2d const& v)
-    {
-        #ifdef MAPNIK_LOG
-        MAPNIK_LOG_DEBUG(ctrans) << "offset_converter: " << v;
-        #endif
-
-        vertices_.push_back(v);
-    }
+    void push_vertex(vertex2d const& v);
 
     Geometry &              geom_;
     double                  offset_;

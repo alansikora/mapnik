@@ -73,8 +73,8 @@ namespace mapnik
     offset_converter<T>::offset_converter(T & geom)
         : geom_(geom)
         , offset_(0.0)
-        , threshold_(8.0)
-        , half_turn_segments_(16)
+        , threshold_(12.0)
+        , half_turn_segments_(32)
         , status_(initial)
         , pre_first_(vertex2d::no_init)
         , pre_(vertex2d::no_init)
@@ -87,6 +87,32 @@ namespace mapnik
         *px = cur_.x;
         *py = cur_.y;
         return cur_.cmd;
+    }
+
+    template <typename T>
+    void offset_converter<T>::displace(vertex2d & v, vertex2d const& u, double a) const
+    {
+        v.x = u.x + offset_ * std::sin(a);
+        v.y = u.y - offset_ * std::cos(a);
+        v.cmd = u.cmd;
+    }
+
+    template <typename T>
+    void offset_converter<T>::push_vertex(vertex2d const& v)
+    {
+        #ifdef MAPNIK_LOG
+        MAPNIK_LOG_DEBUG(ctrans) << "offset_converter: " << v;
+        #endif
+
+        if (vertices_.size()) {
+            vertex2d const& last = vertices_.at(vertices_.size()-1);
+            if (!((std::fabs(last.x - v.x) < 1e-1) && (std::fabs(last.y - v.y) < 1e-1)))
+            {
+                vertices_.push_back(v);
+            }
+        } else {
+            vertices_.push_back(v);
+        }
     }
 
     template <typename T>
@@ -141,7 +167,7 @@ namespace mapnik
                 }
                 else
                 {
-                    bulge_steps = 1 + static_cast<int>(std::floor(half_turns / pi));
+                    bulge_steps = 1 + static_cast<int>(std::floor((half_turns / pi)+.5));
                 }
             }
             else
@@ -152,7 +178,7 @@ namespace mapnik
                 }
                 else
                 {
-                    bulge_steps = 1 + static_cast<int>(std::floor(half_turns / pi));
+                    bulge_steps = 1 + static_cast<int>(std::floor((half_turns / pi)+.5));
                 }
             }
 
@@ -173,15 +199,17 @@ namespace mapnik
             }
             #endif
 
-            displace(w, v1, angle_a);
-            push_vertex(w);
-
-            for (int s = 0; ++s < bulge_steps;)
-            {
-                displace(w, v1, angle_a + (joint_angle * s) / bulge_steps);
+            if (bulge_steps == 0) {
+                displace(w, v1, angle_a);
                 push_vertex(w);
+            } else {
+                for (int s = 0; ++s < bulge_steps;)
+                {
+                    //std::clog << (joint_angle * s) / bulge_steps << "\n";
+                    displace(w, v1, angle_a + (joint_angle * s) / bulge_steps);
+                    push_vertex(w);
+                }
             }
-
             displace(v1, angle_b);
             push_vertex(v1);
         }
