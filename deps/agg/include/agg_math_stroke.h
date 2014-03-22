@@ -476,7 +476,6 @@ namespace agg
                 // the same as in round joins and caps. You can safely comment 
                 // out this entire "if".
                 //-------------------
-                /*
                 if(m_approx_scale * (m_width_abs - dbevel) < m_width_eps)
                 {
                     if(calc_intersection(v0.x + dx1, v0.y - dy1,
@@ -493,7 +492,6 @@ namespace agg
                     }
                     return;
                 }
-                */
             }
 
             switch(m_line_join)

@@ -20,6 +20,7 @@
 #include "agg_vcgen_stroke.h"
 #include "agg_shorten_path.h"
 
+const static double eps = 1e-2;
 namespace agg
 {
 
@@ -126,6 +127,7 @@ unsigned vcgen_stroke::vertex(double* x, double* y)
             break;
 
         case outline1:
+            {
             if(m_closed)
             {
                 if(m_src_vertex >= m_src_vertices.size())
@@ -143,23 +145,30 @@ unsigned vcgen_stroke::vertex(double* x, double* y)
                     break;
                 }
             }
-            m_stroker.calc_join(m_out_vertices,
-                                m_src_vertices.prev(m_src_vertex),
-                                m_src_vertices.curr(m_src_vertex),
-                                m_src_vertices.next(m_src_vertex),
-                                m_src_vertices.prev(m_src_vertex).dist,
-                                m_src_vertices.curr(m_src_vertex).dist);
+            double len1 = m_src_vertices.prev(m_src_vertex).dist;
+            double len2 = m_src_vertices.curr(m_src_vertex).dist;
+            if ( len1 > eps && len2 > eps)
+            {
+                m_stroker.calc_join(m_out_vertices,
+                                    m_src_vertices.prev(m_src_vertex),
+                                    m_src_vertices.curr(m_src_vertex),
+                                    m_src_vertices.next(m_src_vertex),
+                                    len1,
+                                    len2);
+            }
             ++m_src_vertex;
             m_prev_status = m_status;
             m_status = out_vertices;
             m_out_vertex = 0;
             break;
+            }
 
         case close_first:
             m_status = outline2;
             cmd = path_cmd_move_to;
 
         case outline2:
+            {
             if(m_src_vertex <= unsigned(m_closed == 0))
             {
                 m_status = end_poly2;
@@ -168,17 +177,23 @@ unsigned vcgen_stroke::vertex(double* x, double* y)
             }
 
             --m_src_vertex;
-            m_stroker.calc_join(m_out_vertices,
-                                m_src_vertices.next(m_src_vertex),
-                                m_src_vertices.curr(m_src_vertex),
-                                m_src_vertices.prev(m_src_vertex),
-                                m_src_vertices.curr(m_src_vertex).dist,
-                                m_src_vertices.prev(m_src_vertex).dist);
 
+            double len1 = m_src_vertices.curr(m_src_vertex).dist;
+            double len2 = m_src_vertices.prev(m_src_vertex).dist;
+            if ( len1 > eps && len2 > eps)
+            {
+                m_stroker.calc_join(m_out_vertices,
+                                    m_src_vertices.next(m_src_vertex),
+                                    m_src_vertices.curr(m_src_vertex),
+                                    m_src_vertices.prev(m_src_vertex),
+                                    len1,
+                                    len2);
+            }
             m_prev_status = m_status;
             m_status = out_vertices;
             m_out_vertex = 0;
             break;
+            }
 
         case out_vertices:
             if(m_out_vertex >= m_out_vertices.size())
